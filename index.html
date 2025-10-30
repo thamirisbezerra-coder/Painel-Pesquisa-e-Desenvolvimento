@@ -11,7 +11,7 @@
     <style>
         body { font-family: 'Inter', sans-serif; background-color: #f3f4f6; }
 
-        /* Ocultar scrollbar mas manter rolagem */
+        /* Ocultar scrollbar mas manter rolagem - CLASSE REMOVIDA DOS ELEMENTOS ABAIXO */
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
@@ -242,8 +242,9 @@
                 <!-- Secção de Boas-vindas e Instruções -->
                 <section id="welcome-section" class="bg-white p-6 rounded-2xl shadow-sm border border-blue-200">
                     <h2 class="text-xl font-bold text-blue-800 mb-3">Bem-vindo(a) ao Painel P&D!</h2>
+                    <!-- TEXTO DE BOAS-VINDAS ATUALIZADO -->
                     <p class="text-gray-700 mb-2">
-                        O objetivo deste painel é visualizar rapidamente o que os clientes e vendedores estão a falar sobre os seus produtos.
+                        O objetivo deste painel é visualizar os feedbacks dos produtos desenvolvidos pelo time de P&D.
                         Use esta ferramenta para analisar os feedbacks e trabalhar em conjunto com a gestão para melhorar o nosso portfólio.
                     </p>
                     <ul class="list-disc list-inside text-sm text-gray-600 space-y-1">
@@ -293,7 +294,8 @@
                                 <!-- Opções de Feedback inseridas pelo JS -->
                             </select>
                         </div>
-                        <div id="observations-feed-list" class="space-y-4 overflow-y-auto no-scrollbar pr-2" style="max-height: 28rem;">
+                        <!-- BARRA DE ROLAGEM ADICIONADA (removida classe 'no-scrollbar') -->
+                        <div id="observations-feed-list" class="space-y-4 overflow-y-auto pr-2" style="max-height: 28rem;">
                             <p class="text-gray-500">Nenhuma observação encontrada.</p>
                             <!-- Observações inseridas pelo JS -->
                         </div>
@@ -326,7 +328,8 @@
                 <h3 id="feedback-samples-title" class="text-xl font-bold">Amostras com Feedback:</h3>
                 <button id="close-feedback-samples-btn" class="text-3xl font-bold text-gray-500 hover:text-gray-800">&times;</button>
             </div>
-            <div id="feedback-samples-list" class="space-y-3 max-h-[60vh] overflow-y-auto no-scrollbar pr-2">
+            <!-- BARRA DE ROLAGEM ADICIONADA (removida classe 'no-scrollbar') -->
+            <div id="feedback-samples-list" class="space-y-3 max-h-[60vh] overflow-y-auto pr-2">
                 <p class="text-gray-500">A carregar detalhes...</p>
                 <!-- Amostras inseridas pelo JS -->
             </div>
@@ -393,7 +396,8 @@
                 <h3 class="text-xl font-bold">Novas Respostas de Gestores</h3>
                 <button id="close-notification-btn" class="text-3xl font-bold text-gray-500 hover:text-gray-800">&times;</button>
             </div>
-            <div id="notification-list" class="space-y-3 max-h-[60vh] overflow-y-auto no-scrollbar pr-2">
+            <!-- BARRA DE ROLAGEM ADICIONADA (removida classe 'no-scrollbar') -->
+            <div id="notification-list" class="space-y-3 max-h-[60vh] overflow-y-auto pr-2">
                 <p class="text-gray-500">Nenhuma resposta nova.</p>
                 <!-- Notificações inseridas pelo JS -->
             </div>
@@ -1626,4 +1630,6 @@
     </script>
 </body>
 </html>
+
+
 
