@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-R8">
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Painel de P&D</title>
     <script src="https://cdn.tailwindcss.com"></script>
@@ -297,14 +297,14 @@
 
                     <!-- Coluna do Feed de Observações -->
                     <div class="bg-white p-6 rounded-2xl shadow-sm border lg:col-span-1 flex flex-col">
-                        <div class="flex flex-col md:flex-row justify-between items-center mb-4 gap-4">
-                            <h2 class="text-xl font-bold text-gray-900">Feed de Observações</h2>
-                            <!-- ATUALIZADO: Removido 'md:flex-row' para empilhar os filtros -->
-                            <div class="flex flex-col gap-2 w-full md:w-auto">
-                                <!-- NOVO: Pesquisa por Vendedor -->
-                                <input type="text" id="seller-search-input" placeholder="Pesquisar Vendedor..." class="border-gray-300 rounded-lg shadow-sm text-sm p-1.5 w-full md:w-auto">
+                        <div class="flex flex-col justify-between items-center mb-4 gap-4">
+                            <h2 class="text-xl font-bold text-gray-900 w-full">Feed de Observações</h2>
+                            <!-- ATUALIZAÇÃO DE LAYOUT: Filtros empilhados -->
+                            <div class="flex flex-col gap-2 w-full">
+                                <!-- Pesquisa por Vendedor -->
+                                <input type="text" id="seller-search-input" placeholder="Pesquisar Vendedor..." class="border-gray-300 rounded-lg shadow-sm text-sm p-1.5 w-full">
                                 <!-- Filtro de Feedback (para o feed) -->
-                                <select id="observation-feedback-filter" class="border-gray-300 rounded-lg shadow-sm text-sm p-1.5 w-full md:w-auto">
+                                <select id="observation-feedback-filter" class="border-gray-300 rounded-lg shadow-sm text-sm p-1.5 w-full">
                                     <option value="TODOS">Todos Feedbacks</option>
                                     <!-- Opções de Feedback inseridas pelo JS -->
                                 </select>
@@ -441,6 +441,7 @@
         };
 
         // Configuração dos Responsáveis de P&D (COM NOMES DOS SEGMENTOS)
+        // ATUALIZADO: Adicionado 'DLS' para Lácteos
         const PD_CONFIG = {
             'CARLOS YOSHIOKA': { 
                 segments: ['DAR'], 
@@ -448,7 +449,7 @@
                 password: 'pd_carlos1' 
             },
             'FLAVIA OLIVEIRA': { 
-                segments: ['DLA'], 
+                segments: ['DLA', 'DLS'], // ATUALIZADO AQUI
                 segmentNames: ['Lácteos'], 
                 password: 'pd_flavia2' 
             },
@@ -544,7 +545,7 @@
         // Feed de Observações
         const observationsFeedList = document.getElementById('observations-feed-list');
         const observationFeedbackFilter = document.getElementById('observation-feedback-filter');
-        const sellerSearchInput = document.getElementById('seller-search-input'); // NOVO: Pesquisa Vendedor
+        const sellerSearchInput = document.getElementById('seller-search-input'); // Pesquisa Vendedor
 
         // Post-its (Notas Internas)
         const newPostItInput = document.getElementById('new-post-it-input');
@@ -621,7 +622,6 @@
         }
 
         // Determina o segmento P&D com base no código do produto
-        // *** FUNÇÃO CORRIGIDA ***
         function getPdSegmentFromProductCode(produto) {
             const normalizedProduto = normalizeText(produto); // Get the full normalized product code
             if (!normalizedProduto) return null; // Retorna nulo se o produto for inválido
@@ -1175,7 +1175,7 @@
         // Renderiza o Feed de Observações
         function renderObservationsFeed(samples) {
             const feedbackFilter = observationFeedbackFilter.value;
-            const sellerSearchTerm = normalizeText(sellerSearchInput.value); // NOVO
+            const sellerSearchTerm = normalizeText(sellerSearchInput.value); 
 
             let samplesWithObservations = samples
                 .filter(s => s.observation && s.observation.trim() !== '');
@@ -1187,7 +1187,7 @@
                 });
             }
             
-            // NOVO: Aplica filtro de pesquisa por vendedor
+            // Aplica filtro de pesquisa por vendedor
             if (sellerSearchTerm) {
                 samplesWithObservations = samplesWithObservations.filter(sample => {
                     return normalizeText(sample.sellerOriginalName).includes(sellerSearchTerm);
@@ -1269,8 +1269,10 @@
                 `;
 
                 const observationTime = sample.lastUpdate?.toDate() ? sample.lastUpdate.toDate().toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }) : '';
+                
+                // ATUALIZADO: Adicionada data de Faturamento (Emissão NF)
+                const faturamentoDate = sample.emissaoNF ? ` | Fat.: ${sample.emissaoNF}` : '';
 
-                // ATUALIZADO: Adicionado highlightButtonHtml e sample.descricao
                 card.innerHTML = `
                     <div class="mb-2">
                         <div class="flex justify-between items-start">
@@ -1279,7 +1281,7 @@
                         </div>
                         <p class="text-xs text-gray-500">${sample.descricao || 'Sem descrição'}</p>
                         <p class="text-sm text-gray-500 mt-1">
-                            <strong class="text-blue-700">${sample.sellerOriginalName}</strong> (Pedido: ${sample.pedido})
+                            <strong class="text-blue-700">${sample.sellerOriginalName}</strong> (Pedido: ${sample.pedido}${faturamentoDate})
                         </p>
                     </div>
                     <p class="text-gray-700 italic mb-3">"${sample.observation}"</p>
@@ -1352,7 +1354,8 @@
                     .sort((a, b) => (b.timestamp?.toDate() ?? 0) - (a.timestamp?.toDate() ?? 0))[0];
 
             replyGestorModalProduct.textContent = `${sample.produto || ''} ${sample.descricao ? '- ' + sample.descricao : ''}`;
-            replyGestorModalSeller.textContent = `Vendedor: ${sample.sellerOriginalName} | Pedido: ${sample.pedido}`;
+            // ATUALIZADO: Adicionada data de Faturamento (Emissão NF)
+            replyGestorModalSeller.textContent = `Vendedor: ${sample.sellerOriginalName} | Pedido: ${sample.pedido} | Fat.: ${sample.emissaoNF || 'N/A'}`;
             replyGestorModalObservation.textContent = `"${sample.observation || ''}"`;
             replyGestorMessageInput.value = pdReply ? pdReply.replyMessage : ''; // Preenche com resposta anterior
 
@@ -1415,7 +1418,8 @@
             const pdNote = allPdPostits.find(n => n.sampleId === sample.id);
 
             postItModalProduct.textContent = `${sample.produto || ''} ${sample.descricao ? '- ' + sample.descricao : ''}`;
-            postItModalSeller.textContent = `Vendedor: ${sample.sellerOriginalName} | Pedido: ${sample.pedido}`;
+            // ATUALIZADO: Adicionada data de Faturamento (Emissão NF)
+            postItModalSeller.textContent = `Vendedor: ${sample.sellerOriginalName} | Pedido: ${sample.pedido} | Fat.: ${sample.emissaoNF || 'N/A'}`;
             postItModalObservation.textContent = `"${sample.observation || ''}"`;
             postItMessageInput.value = pdNote ? pdNote.message : ''; // Preenche com nota anterior
             
@@ -1612,6 +1616,9 @@
                         </button>
                     `;
                     
+                    // ATUALIZADO: Adicionada data de Faturamento (Emissão NF)
+                    const faturamentoDate = sample.emissaoNF ? ` | <strong>Fat.:</strong> ${sample.emissaoNF}` : '';
+
                     return `
                         <div class="feedback-sample-item ${isHighlighted ? 'highlighted-sample-item' : ''}">
                             <div class="flex justify-between items-start">
@@ -1620,6 +1627,11 @@
                                     <p class="text-xs text-gray-600">${sample.descricao || ''}</p>
                                     <p><strong>Vendedor:</strong> ${sample.sellerOriginalName} (Pedido: ${sample.pedido})</p>
                                     <p><strong>Cliente:</strong> ${sample.razaoSocial || ''}</p>
+                                    <p class="text-xs text-gray-500 mt-1">
+                                        ${sample.qtde ? `<strong>Qtde:</strong> ${sample.qtde}` : ''}
+                                        ${sample.notaFiscal ? ` | <strong>NF:</strong> ${sample.notaFiscal}` : ''}
+                                        ${faturamentoDate}
+                                    </p>
                                 </div>
                                 <div class="flex-shrink-0 flex flex-col space-y-1 items-end">
                                     ${highlightButtonHtml}
@@ -1705,7 +1717,7 @@
         
         // Filtros do Feed de Observação
         observationFeedbackFilter.addEventListener('change', () => renderDashboard());
-        sellerSearchInput.addEventListener('input', () => renderDashboard()); // NOVO
+        sellerSearchInput.addEventListener('input', () => renderDashboard()); // Pesquisa Vendedor
 
         // Modal de Amostras (do Gráfico)
         closeFeedbackSamplesBtn.addEventListener('click', () => {
@@ -1760,6 +1772,8 @@
     </script>
 </body>
 </html>
+
+
 
 
 
