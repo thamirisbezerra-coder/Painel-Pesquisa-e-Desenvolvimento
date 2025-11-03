@@ -131,7 +131,7 @@
             <!-- Gráficos -->
             <section class="mb-8 grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div class="bg-white p-6 rounded-2xl shadow-sm border">
-                    <h3 class="font-bold text-lg mb-2 text-center">Status (Todas Amostras)</h3>
+                    <h3 class="font-bold text-lg mb-2 text-center">Status (Amostras do Segmento)</h3>
                     <div style="height: 250px;"><canvas id="segment-status-chart"></canvas></div>
                 </div>
                 <div class="bg-white p-6 rounded-2xl shadow-sm border">
@@ -311,6 +311,19 @@
             'Nutrição Animal': { name: 'Rebeca', pass: 'pd_rebeca6' },
             'ADMIN': { name: 'Admin', pass: 'admin123' } // Senha de Admin
         };
+
+        // *** NOVO: MAPEAMENTO DE FILTRO DE PRODUTO P&D ***
+        const PD_PRODUCT_PREFIX_MAP = {
+            'Panificação': ['DPAN'], // Adriana
+            'Cárneos': ['DES'], // Anderson
+            'Aromas Doces, Salgados e Molhos': ['DES'], // Carlos
+            'Nutracêuticos': ['DMIX'], // Daise
+            'Lácteos': ['DLA', 'DLS'], // Flavia
+            'Sorvetes': ['DSO'], // Margarida
+            'Nutrição Animal': ['DNA'], // Rebeca
+            'ADMIN': null // Admin vê tudo
+        };
+        
         const PENDING_STATUSES = ['EM ANÁLISE', 'AMOSTRA SEM FEEDBACK', 'SEM RETORNO DO CLIENTE', 'AMOSTRA NÃO TESTADA', 'PENDENTE'];
         
         // --- Elementos DOM ---
@@ -363,7 +376,7 @@
         let currentSessionId = null;
         let currentSegment = null; // Segmento do P&D logado
         let currentPdName = null; // Nome do P&D logado
-        let allCurrentSamples = []; // Armazena TODAS as amostras carregadas
+        let allCurrentSamples = []; // Armazena TODAS as amostras carregadas (já filtradas)
         let sellerSegmentsCache = {}; // Cache de segmentos de vendedores
         let managerRepliesListenerUnsubscribe = null; // Respostas dos gestores
         let sellerRepliesListenerUnsubscribe = null; // Respostas dos vendedores
@@ -398,7 +411,7 @@
 
                 if (this.loadedItems === this.totalItems && !this.hasCompleted) {
                     this.hasCompleted = true;
-                    // O P&D (não-admin) vê TUDO, o filtro é aplicado no feed
+                    // Passa TODOS os dados para a função de callback
                     this.onComplete(this.allData);
                 }
             }
@@ -582,8 +595,28 @@
 
             // 4. Usa o DataLoadManager para carregar as sub-coleções
             const loadManager = new DataLoadManager(sellerDocs.length, (allSamples) => {
-                allCurrentSamples = allSamples;
-                processAndDisplayDashboard(allCurrentSamples);
+                
+                // --- INÍCIO DA CORREÇÃO: FILTRO P&D ---
+                const prefixes = PD_PRODUCT_PREFIX_MAP[currentSegment]; // Pega os prefixos do segmento logado
+                
+                let filteredSamples;
+                if (prefixes === null) { // ADMIN (null) vê tudo
+                    filteredSamples = allSamples;
+                } else {
+                    // Filtra as amostras
+                    filteredSamples = allSamples.filter(sample => {
+                        if (!sample.produto) return false; // Ignora amostras sem código de produto
+                        const normalizedProduto = normalizeText(sample.produto);
+                        
+                        // Verifica se o código do produto começa com algum dos prefixos
+                        return prefixes.some(prefix => normalizedProduto.startsWith(prefix));
+                    });
+                }
+                // --- FIM DA CORREÇÃO ---
+
+                allCurrentSamples = filteredSamples; // Armazena SOMENTE as amostras filtradas
+                processAndDisplayDashboard(allCurrentSamples); // Passa somente as amostras filtradas
+                
                 loadingState.classList.add('hidden');
                 dashboardContent.classList.remove('hidden');
             });
@@ -753,12 +786,20 @@
                 }
             });
 
+            // CORREÇÃO: Mudar título do gráfico se não for admin
+            const statusTitle = document.querySelector('#segment-status-chart').closest('.bg-white').querySelector('h3');
+            if (currentSegment !== 'ADMIN') {
+                 statusTitle.textContent = "Status (Amostras do Segmento)";
+            }
+
             renderChart('segment-status-chart', 'doughnut', {
                 labels: ['Pendentes', 'Resolvidos'],
                 datasets: [{ data: [pending, resolved], backgroundColor: ['#facc15', '#3b82f6'] }]
             });
 
-            if (approved === 0 && rejected === 0 && events === 0) {
+            if (approved === 0 && rejected === 0 && events === 0 && resolved > 0) {
+                 renderChart('rejection-rate-chart', 'doughnut', { labels: ['Aguardando Feedbacks'], datasets: [{ data: [resolved], backgroundColor: ['#e5e7eb'] }] });
+            } else if (approved === 0 && rejected === 0 && events === 0) {
                  renderChart('rejection-rate-chart', 'doughnut', { labels: ['Aguardando Respostas'], datasets: [{ data: [1], backgroundColor: ['#e5e7eb'] }] });
             } else {
                 renderChart('rejection-rate-chart', 'doughnut', {
@@ -801,7 +842,7 @@
             const filteredSamples = samples.filter(s => {
                 if (!s.observation) return false;
                 
-                // Filtro de Segmento
+                // Filtro de Segmento (do VENDEDOR)
                 if (segmentFilter) {
                      const sellerSegment = sellerSegmentsCache[normalizeText(s.sellerName)];
                      if(sellerSegment !== segmentFilter) return false;
@@ -930,7 +971,25 @@
         function renderPdPostits() {
             const globalSearch = normalizeText(globalSearchInput.value);
             
+            // CORREÇÃO: Os post-its não devem ser filtrados por prefixo,
+            // mas sim pela busca global. A lista 'allPdPostits' já é filtrada
+            // no listener (se necessário) ou podemos filtrar aqui.
+            // O listener já carrega todos, então filtramos aqui.
+            
             const filteredNotes = allPdPostits.filter(note => {
+                
+                // 1. Filtro de Segmento P&D (se não for Admin)
+                if (currentSegment !== 'ADMIN') {
+                    // Tenta encontrar uma amostra correspondente em 'allCurrentSamples' (que já está filtrada)
+                    if (note.contextId) {
+                        if (!allCurrentSamples.find(s => s.id === note.contextId)) {
+                             return false; // Nota é de uma amostra que não pertence a este P&D
+                        }
+                    }
+                    // TODO: Poderíamos adicionar um filtro para notas gerais se tivessem um segmento
+                }
+                
+                // 2. Filtro de Pesquisa Global
                 if (globalSearch) {
                      return (
                          normalizeText(note.message).includes(globalSearch) ||
@@ -1478,6 +1537,8 @@
     </script>
 </body>
 </html>
+
+
 
 
 
