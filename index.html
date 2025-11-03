@@ -57,8 +57,6 @@
         .feedback-sample-item.highlight {
             background-color: #fffbeb; /* bg-amber-50 */
         }
-
-        /* Estilo Card de Login removido */
     </style>
 </head>
 <body class="text-gray-800">
@@ -79,7 +77,7 @@
             </div>
             <p class="text-gray-600 text-center mb-8">Por favor, selecione sua área e digite a senha.</p>
             
-            <!-- NOVO FORMULÁRIO DE LOGIN -->
+            <!-- FORMULÁRIO DE LOGIN -->
             <div class="space-y-4">
                 <div>
                     <label for="pd-segment-select" class="block text-sm font-medium text-gray-700 mb-1">Área / Segmento</label>
@@ -130,6 +128,7 @@
                     <h3 class="font-bold text-lg mb-2 text-center">Status (Amostras do Segmento)</h3>
                     <div style="height: 250px;"><canvas id="segment-status-chart"></canvas></div>
                 </div>
+                <!-- GRÁFICO DE DISTRIBUIÇÃO (PIZZA) RESTAURADO -->
                 <div class="bg-white p-6 rounded-2xl shadow-sm border">
                     <h3 class="font-bold text-lg mb-2 text-center">Distribuição de Feedbacks</h3>
                     <div style="height: 250px;"><canvas id="rejection-rate-chart"></canvas></div>
@@ -141,12 +140,21 @@
                 
                 <!-- Coluna Feed Observações -->
                 <section>
-                    <div class="flex justify-between items-center mb-4">
+                    <!-- FILTROS ALTERADOS -->
+                    <div class="flex flex-col md:flex-row justify-between items-center mb-4 gap-2">
                         <h2 class="text-2xl font-bold text-gray-900">Feed de Observações</h2>
-                        <select id="observation-segment-filter" class="border-gray-300 rounded-lg shadow-sm text-sm p-1">
-                             <option value="">Todos os Segmentos</option>
-                             <!-- Populado por JS -->
-                        </select>
+                        <div class="flex gap-2 w-full md:w-auto">
+                            <!-- Filtro por TIPO de Feedback -->
+                            <select id="feedback-type-filter" class="border-gray-300 rounded-lg shadow-sm text-sm p-2 w-full">
+                                <option value="">Todos os Tipos</option>
+                                <option value="A -">Aprovados (A -)</option>
+                                <option value="R -">Reprovados (R -)</option>
+                                <option value="E -">Eventos (E -)</option>
+                                <option value="P -">Pendentes (P -)</option>
+                            </select>
+                            <!-- Barra de pesquisa por VENDEDOR -->
+                            <input id="seller-filter-input" type="text" placeholder="Filtrar por vendedor..." class="border-gray-300 rounded-lg shadow-sm text-sm p-2 w-full">
+                        </div>
                     </div>
                     <div id="observations-feed-list" class="space-y-4 bg-white p-4 rounded-2xl shadow-sm border no-scrollbar">
                         <p class="text-gray-500 placeholder-observation">Nenhuma observação encontrada.</p>
@@ -299,19 +307,18 @@
         // Definições de Acesso
         const PD_PASSWORDS = {
             'Panificação': { name: 'Adriana', pass: 'pd_adriana5', prefixes: ['DPAN'] },
-            'Cárneos': { name: 'Anderson', pass: 'pd_anderson3', prefixes: ['DES'] }, // Assumindo DES para Cárneos
-            'Aromas Doces, Salgados e Molhos': { name: 'Carlos', pass: 'pd_carlos1', prefixes: ['DES'] }, // Assumindo DES
+            'Cárneos': { name: 'Anderson', pass: 'pd_anderson3', prefixes: ['DES'] }, 
+            'Aromas Doces, Salgados e Molhos': { name: 'Carlos', pass: 'pd_carlos1', prefixes: ['DES'] }, 
             'Nutracêuticos': { name: 'Daise', pass: 'pd_daise4', prefixes: ['DMIX'] },
             'Lácteos': { name: 'Flavia', pass: 'pd_flavia2', prefixes: ['DLA', 'DLS'] },
             'Sorvetes': { name: 'Margarida', pass: 'pd_margarida7', prefixes: ['DSO'] },
             'Nutrição Animal': { name: 'Rebeca', pass: 'pd_rebeca6', prefixes: ['DNA'] },
-            'ADMIN': { name: 'Admin', pass: 'admin123', prefixes: [] } // Admin vê tudo
+            'ADMIN': { name: 'Admin', pass: 'admin123', prefixes: [] } 
         };
         const PENDING_STATUSES = ['EM ANÁLISE', 'AMOSTRA SEM FEEDBACK', 'SEM RETORNO DO CLIENTE', 'AMOSTRA NÃO TESTADA', 'PENDENTE'];
         
         // --- Elementos DOM ---
         const loginView = document.getElementById('login-view');
-        // ALTERADO: de pdLoginButtons para pdSegmentSelect
         const pdSegmentSelect = document.getElementById('pd-segment-select');
         const pdPasswordInput = document.getElementById('pd-password-input');
         const pdLoginBtn = document.getElementById('pd-login-btn');
@@ -323,7 +330,11 @@
         const loadingState = document.getElementById('loading-state');
         const loadingMessage = document.getElementById('loading-message');
         const dashboardContent = document.getElementById('dashboard-content');
-        const observationSegmentFilter = document.getElementById('observation-segment-filter');
+        
+        // --- NOVOS IDs DE FILTRO ---
+        const feedbackTypeFilter = document.getElementById('feedback-type-filter');
+        const sellerFilterInput = document.getElementById('seller-filter-input');
+        
         const observationsFeedList = document.getElementById('observations-feed-list');
         const postItInput = document.getElementById('post-it-input');
         const addPostItBtn = document.getElementById('add-post-it-btn');
@@ -351,7 +362,7 @@
         const notificationModal = document.getElementById('notification-modal');
         const notificationList = document.getElementById('notification-list');
         const closeNotificationBtn = document.getElementById('close-notification-btn');
-        let notificationBtn = null; // Definido dinamicamente
+        let notificationBtn = null; 
         const customAlert = document.getElementById('custom-alert');
         const customAlertTitle = document.getElementById('custom-alert-title');
         const customAlertMessage = document.getElementById('custom-alert-message');
@@ -359,21 +370,21 @@
 
         // --- Estado Global ---
         let currentSessionId = null;
-        let currentSegment = null; // Segmento de P&D logado
-        let currentPdManagerName = null; // Nome do P&D logado
-        let currentPrefixes = []; // Prefixos do P&D logado
-        let allCurrentSamples = []; // Armazena TODAS as amostras carregadas
-        let sellerSegmentsCache = {}; // Cache de segmentos de vendedores
-        let sellerRepliesListenerUnsubscribe = null; // Respostas dos vendedores
-        let managerRepliesListenerUnsubscribe = null; // Respostas dos gerentes (para P&D)
-        let pdPostitsListenerUnsubscribe = null; // Notas P&D (para feed)
+        let currentSegment = null; 
+        let currentPdManagerName = null; 
+        let currentPrefixes = []; 
+        let allCurrentSamples = []; 
+        let sellerSegmentsCache = {}; 
+        let sellerRepliesListenerUnsubscribe = null; 
+        let managerRepliesListenerUnsubscribe = null; 
+        let pdPostitsListenerUnsubscribe = null; 
         let dataListenersUnsubscribe = [];
         let chartInstances = {};
         let currentSampleForReply = null;
         let currentSampleForPostit = null;
-        let allSellerReplies = []; // Respostas dos vendedores para o gerente
-        let allManagerReplies = []; // Respostas dos gerentes para os vendedores (para o feed)
-        let allPdPostits = []; // Post-its do P&D (para o feed)
+        let allSellerReplies = []; 
+        let allManagerReplies = []; 
+        let allPdPostits = []; 
         
         // Classe de Gestão de Carga
         class DataLoadManager {
@@ -405,7 +416,7 @@
 
         function showAlert(message, title = "Erro na Operação", color = "text-red-600") {
             customAlertTitle.textContent = title;
-            customAlertMessage.innerHTML = message; // Usar innerHTML para permitir <br>
+            customAlertMessage.innerHTML = message; 
             customAlertTitle.className = `text-xl font-bold mb-4 ${color}`;
             customAlert.classList.remove('hidden');
         }
@@ -429,7 +440,6 @@
 
         // --- Lógica de Carregamento de Dados (v2) ---
         
-        // CORREÇÃO: Funções de listener definidas ANTES de serem chamadas
         function listenForManagerReplies(sessionId) {
             if (managerRepliesListenerUnsubscribe) managerRepliesListenerUnsubscribe();
             const q = query(collection(db, "sessoes", sessionId, "notificacoesVendedor"));
@@ -495,6 +505,8 @@
         }
 
         async function loadSellerSegments() {
+            // Esta função não é mais necessária para os filtros do P&D
+            // Mas pode ser útil se o ADMIN quiser filtrar por segmento de vendedor
             sellerSegmentsCache = {};
             try {
                 const segmentsSnap = await getDocs(collection(db, "vendedorConfig"));
@@ -502,7 +514,6 @@
                     sellerSegmentsCache[doc.id] = doc.data().segmento;
                 });
                 console.log("Cache de segmentos carregado:", sellerSegmentsCache);
-                populateSegmentFilters(); // Popula os filtros de segmento
             } catch (error) {
                 handleFirestoreError(error, "carregar segmentos de vendedores");
             }
@@ -520,17 +531,12 @@
             currentSessionId = sessionId;
             allCurrentSamples = [];
 
-            // 1. Carrega os segmentos
             await loadSellerSegments();
-
-            // 2. Ouve as notificações (Sino)
             listenForSellerReplies(sessionId);
-            // 3. Ouve as threads de comunicação (Feed)
             listenForManagerReplies(sessionId);
             listenForSellerRepliesFeed(sessionId);
             listenForPdPostits(sessionId);
 
-            // 4. Busca todos os vendedores da sessão
             const sellersQuery = query(collection(db, "sessoes", sessionId, "vendedores"));
             const sellersSnapshot = await getDocs(sellersQuery);
             const sellerDocs = sellersSnapshot.docs;
@@ -543,25 +549,20 @@
                  return;
             }
 
-            // 5. Usa o DataLoadManager para carregar as sub-coleções
             const loadManager = new DataLoadManager(sellerDocs.length, (allSamples) => {
                 
-                // --- FILTRO DE P&D (v2) ---
                 let filteredSamples;
                 if (currentSegment === 'ADMIN') {
-                    filteredSamples = allSamples; // Admin vê tudo
+                    filteredSamples = allSamples; 
                 } else {
-                    // P&D vê amostras com base no prefixo do produto
                     filteredSamples = allSamples.filter(sample => {
                         const productCode = normalizeText(sample.produto);
-                        // Verifica se o código do produto começa com algum dos prefixos do P&D
                         return currentPrefixes.some(prefix => productCode.startsWith(prefix));
                     });
                 }
-                // --- FIM DO FILTRO ---
 
-                allCurrentSamples = filteredSamples; // Armazena SOMENTE as amostras filtradas
-                processAndDisplayDashboard(allCurrentSamples); // Passa somente as amostras filtradas
+                allCurrentSamples = filteredSamples; 
+                processAndDisplayDashboard(allCurrentSamples); 
                 
                 loadingState.classList.add('hidden');
                 dashboardContent.classList.remove('hidden');
@@ -569,7 +570,6 @@
             
             loadingMessage.textContent = `A preparar para carregar ${sellerDocs.length} vendedores...`;
 
-            // 6. Ouve as 'amostras' de cada vendedor
             sellerDocs.forEach(sellerDoc => {
                 const sellerData = sellerDoc.data();
                 const samplesQuery = query(
@@ -580,7 +580,7 @@
                     const samples = samplesSnapshot.docs.map(sampleDoc => ({
                         ...sampleDoc.data(),
                         id: sampleDoc.id,
-                        sellerDocRef: sellerDoc.ref.path // Guarda a referência do vendedor
+                        sellerDocRef: sellerDoc.ref.path 
                     }));
                     loadManager.sellerLoaded(sellerData.originalName, samples);
                 }, (error) => {
@@ -593,7 +593,6 @@
 
         // --- Lógica de Login ---
         
-        // ALTERADO: de populatePdButtons para populatePdLoginSelect
         function populatePdLoginSelect() {
             pdSegmentSelect.innerHTML = '<option value="">Selecione...</option>';
 
@@ -606,7 +605,6 @@
         }
 
         async function login() {
-            // ALTERADO: Lê o segmento do select
             const selectedSegment = pdSegmentSelect.value;
             const password = pdPasswordInput.value;
             
@@ -615,7 +613,6 @@
                 return;
             }
             
-            // Pega os dados do segmento selecionado
             const segmentData = PD_PASSWORDS[selectedSegment];
 
             if (segmentData && segmentData.pass === password) {
@@ -623,7 +620,6 @@
                 pdLoginBtn.disabled = true;
                 pdLoginBtn.textContent = 'A carregar...';
 
-                // Define o estado global
                 currentSegment = selectedSegment;
                 currentPdManagerName = segmentData.name;
                 currentPrefixes = segmentData.prefixes;
@@ -670,12 +666,11 @@
             dashboard.classList.add('hidden');
             loginView.classList.remove('hidden');
             pdPasswordInput.value = '';
-            pdSegmentSelect.value = ''; // Reseta o dropdown
+            pdSegmentSelect.value = ''; 
             pdLoginBtn.disabled = false;
             pdLoginBtn.textContent = 'Entrar';
             adminAccessSection.classList.add('hidden');
             
-            // Remove o sino
             document.getElementById('notification-btn')?.parentElement.remove();
         }
 
@@ -687,20 +682,9 @@
             renderPostItList(allPdPostits); 
         }
 
-        function populateSegmentFilters() {
-             const currentSegments = [...new Set(Object.values(sellerSegmentsCache).filter(Boolean))].sort();
-             observationSegmentFilter.innerHTML = '<option value="">Todos os Segmentos</option>';
-             
-             currentSegments.forEach(segment => {
-                 const option = document.createElement('option');
-                 option.value = segment;
-                 option.textContent = segment;
-                 observationSegmentFilter.appendChild(option);
-             });
-        }
-
         function renderCharts(samples) {
             let pending = 0, resolved = 0, approved = 0, rejected = 0, events = 0;
+            // Prefixos para o gráfico de distribuição
             const APPROVED_PREFIX = 'A -';
             const REJECTED_PREFIX = 'R -';
             const EVENTS_PREFIX = 'E -';
@@ -710,6 +694,7 @@
                     pending++;
                 } else {
                     resolved++;
+                    // Contagem para o gráfico de distribuição
                     const feedback = s.feedback || '';
                     if (feedback.startsWith(APPROVED_PREFIX)) approved++;
                     else if (feedback.startsWith(REJECTED_PREFIX)) rejected++;
@@ -717,16 +702,18 @@
                 }
             });
 
+            // --- Gráfico 1: Status (Pendentes/Resolvidos) ---
             const statusTitle = document.querySelector('#segment-status-chart').closest('.bg-white').querySelector('h3');
             if (currentSegment !== 'ADMIN') {
                  statusTitle.textContent = "Status (Amostras do Segmento)";
             }
-
             renderChart('segment-status-chart', 'doughnut', {
                 labels: ['Pendentes', 'Resolvidos'],
                 datasets: [{ data: [pending, resolved], backgroundColor: ['#facc15', '#3b82f6'] }]
             });
 
+            // --- Gráfico 2: Distribuição (Aprovado/Reprovado/Evento) ---
+            // (Lógica restaurada)
             if (approved === 0 && rejected === 0 && events === 0 && resolved > 0) {
                  renderChart('rejection-rate-chart', 'doughnut', { labels: ['Aguardando Feedbacks'], datasets: [{ data: [resolved], backgroundColor: ['#e5e7eb'] }] });
             } else if (approved === 0 && rejected === 0 && events === 0) {
@@ -741,6 +728,7 @@
                 });
             }
         }
+
 
         function renderChart(canvasId, type, data, options = {}) {
             const ctx = document.getElementById(canvasId)?.getContext('2d');
@@ -764,20 +752,27 @@
             });
         }
         
-        // Feed de Observações (Melhorado)
+        // Feed de Observações (Melhorado com novos filtros)
         function renderObservationsFeed(samples) {
             const globalSearch = normalizeText(globalSearchInput.value);
-            const segmentFilter = observationSegmentFilter.value;
+            // --- NOVOS FILTROS ---
+            const sellerFilter = normalizeText(sellerFilterInput.value);
+            const typeFilter = feedbackTypeFilter.value; // ex: "A -", "R -", ""
             
             const filteredSamples = samples.filter(s => {
                 if (!s.observation) return false;
                 
-                // Filtro de Segmento (do Vendedor)
-                if(segmentFilter && sellerSegmentsCache[normalizeText(s.sellerName)] !== segmentFilter) {
+                // Filtro por Tipo de Feedback
+                if(typeFilter && !(s.feedback && s.feedback.startsWith(typeFilter))) {
                     return false;
                 }
                 
-                // Filtro de Pesquisa Global
+                // Filtro por Vendedor
+                if(sellerFilter && !normalizeText(s.sellerName).includes(sellerFilter)) {
+                    return false;
+                }
+                
+                // Filtro de Pesquisa Global (em todos os campos)
                 if (globalSearch) {
                     return (
                         normalizeText(s.sellerName).includes(globalSearch) ||
@@ -794,7 +789,7 @@
             
             observationsFeedList.innerHTML = '';
             if (filteredSamples.length === 0) {
-                 const msg = globalSearch ? 'Nenhum resultado para a pesquisa.' : 'Nenhuma observação encontrada.';
+                 const msg = globalSearch ? 'Nenhum resultado para a pesquisa.' : (sellerFilter || typeFilter ? 'Nenhum resultado para os filtros.' : 'Nenhuma observação encontrada.');
                  observationsFeedList.innerHTML = `<p class="text-gray-500 placeholder-observation p-4">${msg}</p>`;
                  return;
             }
@@ -804,10 +799,8 @@
                  card.className = "p-4 border-b border-gray-100 last:border-b-0";
                  const time = sample.lastUpdate?.toDate() ? sample.lastUpdate.toDate().toLocaleString('pt-BR') : 'data inválida';
                  
-                 // --- Lógica da Thread de Comunicação ---
                  let repliesHtml = '';
                  
-                 // 1. Nota P&D (se houver)
                  const pdNote = allPdPostits.find(p => p.contextId === sample.id);
                  if (pdNote) {
                       repliesHtml += `
@@ -817,7 +810,6 @@
                      `;
                  }
                  
-                 // 2. Resposta do Gestor (incluindo P&D)
                  const managerReply = allManagerReplies
                     .filter(r => r.sellerName === sample.sellerName && r.pedido === sample.pedido && r.produto === sample.produto && r.originalObservation === sample.observation)
                     .sort((a, b) => (b.timestamp?.toDate() ?? 0) - (a.timestamp?.toDate() ?? 0))[0];
@@ -830,7 +822,6 @@
                          </div>
                      `;
                      
-                     // 3. Resposta do Vendedor (a essa resposta)
                      const sellerReply = allSellerReplies
                         .filter(r => r.originalManagerMessage === managerReply.replyMessage && r.pedido === sample.pedido && r.produto === sample.produto)
                         .sort((a, b) => (b.timestamp?.toDate() ?? 0) - (a.timestamp?.toDate() ?? 0))[0];
@@ -843,12 +834,10 @@
                          `;
                      }
                  }
-                 // --- Fim da Lógica da Thread ---
                  
                  card.innerHTML = `
                     <div class="mb-2">
                         <p class="font-bold text-gray-800">${sample.produto}</p>
-                        <!-- NOVO: Descrição e Faturamento -->
                         <p class="text-sm text-gray-600">${sample.descricao || 'Sem descrição'}</p>
                         <p class="text-xs text-gray-500">${sample.razaoSocial || 'Cliente N/A'} | Fat.: ${sample.emissaoNF || 'N/A'}</p>
                     </div>
@@ -874,7 +863,6 @@
                  observationsFeedList.appendChild(card);
             });
             
-            // Listeners
             observationsFeedList.querySelectorAll('.reply-btn').forEach(btn => {
                  btn.addEventListener('click', openPdReplyModal);
             });
@@ -887,10 +875,9 @@
         function renderPostItList(postits) {
             postItList.innerHTML = '';
             
-            // NOVO: Filtra post-its por segmento
             const filteredPostits = postits.filter(note => {
-                if (currentSegment === 'ADMIN') return true; // Admin vê tudo
-                return note.segment === currentSegment; // Outros veem apenas os seus
+                if (currentSegment === 'ADMIN') return true; 
+                return note.segment === currentSegment; 
             }).sort((a, b) => (b.timestamp?.toDate ? b.timestamp.toDate().getTime() : 0) - (a.timestamp?.toDate ? a.timestamp.toDate().getTime() : 0));
             
             if (filteredPostits.length === 0) {
@@ -930,7 +917,7 @@
                 const postItData = {
                     message,
                     pdManagerName: currentPdManagerName,
-                    segment: currentSegment, // NOVO: Etiqueta o segmento
+                    segment: currentSegment, 
                     context: "Nota Geral",
                     contextId: null,
                     timestamp: serverTimestamp()
@@ -948,7 +935,6 @@
              const id = e.currentTarget.dataset.id;
              if (!id) return;
              
-             // Simples confirmação, idealmente usar um modal
              if (!confirm("Tem a certeza que quer excluir esta nota?")) return;
              
              e.currentTarget.disabled = true;
@@ -960,7 +946,6 @@
                  handleFirestoreError(error, "excluir post-it");
                  e.currentTarget.disabled = false;
              }
-             // Listener atualiza a UI
         }
 
         
@@ -1019,9 +1004,8 @@
             sendPdReplyBtn.textContent = 'A Enviar...';
 
             try {
-                // P&D envia para a coleção 'notificacoesVendedor'
                 const notificationData = {
-                    managerName: `${currentPdManagerName} (P&D)`, // Identifica que é do P&D
+                    managerName: `${currentPdManagerName} (P&D)`, 
                     replyMessage: replyMessage,
                     originalObservation: currentSampleForReply.observation,
                     sellerName: currentSampleForReply.sellerName,
@@ -1031,7 +1015,7 @@
                     descricao: currentSampleForReply.descricao || '',
                     timestamp: serverTimestamp(),
                     read: false,
-                    readByPd: true // O P&D "leu" ao enviar
+                    readByPd: true 
                 };
 
                 const sellerNotifsRef = collection(db, "sessoes", currentSessionId, "notificacoesVendedor");
@@ -1064,9 +1048,9 @@
                 const postItData = {
                     message,
                     pdManagerName: currentPdManagerName,
-                    segment: currentSegment, // NOVO: Etiqueta o segmento
+                    segment: currentSegment, 
                     context: `${currentSampleForPostit.produto} (V: ${currentSampleForPostit.sellerName}, P: ${currentSampleForPostit.pedido})`,
-                    contextId: currentSampleForPostit.id, // ID da amostra
+                    contextId: currentSampleForPostit.id, 
                     timestamp: serverTimestamp()
                 };
                 await addDoc(collection(db, "sessoes", currentSessionId, "pdPostits"), postItData);
@@ -1083,7 +1067,6 @@
              }
         }
         
-        // Sino de Notificação (mostra respostas de Vendedores e Gerentes)
         function renderNotificationBell(unreadCount) {
              let countBadge = document.getElementById('notification-count-badge');
              
@@ -1146,7 +1129,6 @@
                  `;
                  notificationList.appendChild(item);
                  
-                 // Não marca como lida automaticamente, espera o clique
              });
              
              notificationModal.classList.remove('hidden');
@@ -1162,7 +1144,7 @@
              try {
                  const docRef = doc(db, "sessoes", currentSessionId, "respostasVendedor", id);
                  await updateDoc(docRef, { readByPd: true });
-                 e.target.closest('.p-3').remove(); // Remove da lista
+                 e.target.closest('.p-3').remove(); 
              } catch(error) {
                  handleFirestoreError(error, "marcar resposta como lida");
                  e.target.disabled = false;
@@ -1170,7 +1152,6 @@
              }
         }
         
-        // --- Modal de Amostras (Pesquisa Global) ---
         function openGlobalSearchModal(samples) {
             feedbackSamplesTitle.textContent = `Resultados da Pesquisa: "${globalSearchInput.value}" (${samples.length})`;
             feedbackSamplesList.innerHTML = '';
@@ -1219,10 +1200,13 @@
         // --- Event Listeners Globais ---
         pdLoginBtn.addEventListener('click', login);
         logoutBtn.addEventListener('click', logout);
-        observationSegmentFilter.addEventListener('change', () => renderObservationsFeed(allCurrentSamples));
+        
+        // --- NOVOS LISTENERS PARA OS FILTROS DO FEED ---
+        sellerFilterInput.addEventListener('input', () => renderObservationsFeed(allCurrentSamples));
+        feedbackTypeFilter.addEventListener('change', () => renderObservationsFeed(allCurrentSamples));
+        
         
         globalSearchInput.addEventListener('keyup', (e) => {
-            // Se pressionar Enter, abre o modal de pesquisa
             if (e.key === 'Enter') {
                 const searchTerm = normalizeText(globalSearchInput.value);
                 if (!searchTerm) {
@@ -1240,7 +1224,7 @@
                 
                 openGlobalSearchModal(filteredSamples);
                 
-            } else { // Pesquisa em tempo real nos feeds
+            } else { 
                 renderObservationsFeed(allCurrentSamples);
             }
         });
@@ -1253,22 +1237,19 @@
         
         cancelPostitBtn.addEventListener('click', () => postitModal.classList.add('hidden'));
         sendPostitBtn.addEventListener('click', sendPostIt);
-        
-        // Caixa de Post-it principal
+
         addPostItBtn.addEventListener('click', addPostItFromInput);
         postItList.addEventListener('click', (e) => {
              const button = e.target.closest('.delete-post-it-btn');
              if (button) deletePostIt({ currentTarget: button });
         });
 
-        // Modal de Notificações (Respostas dos Gestores)
         closeNotificationBtn.addEventListener('click', () => notificationModal.classList.add('hidden'));
         notificationList.addEventListener('click', (e) => {
             const button = e.target.closest('.mark-as-read-btn');
             if (button) markReplyAsRead({ target: button });
         });
         
-        // Tabela de Acessos (Admin)
         pdAccessTbody.addEventListener('click', (e) => {
             const button = e.target.closest('.toggle-password-btn');
             if (button) {
@@ -1291,21 +1272,17 @@
         // --- INICIALIZAÇÃO ---
         (async () => {
             try {
-                await signInAnonymously(auth); // Garante que estamos autenticados no Firebase
-                // ALTERADO: de populatePdButtons para populatePdLoginSelect
+                await signInAnonymously(auth); 
                 populatePdLoginSelect(); 
                 
-                // Tenta fazer login automático se já esteve logado
                 const savedSegment = localStorage.getItem('pdSegment');
                 if (savedSegment && PD_PASSWORDS[savedSegment]) {
-                    // Define o estado global
                     currentSegment = savedSegment;
                     currentPdManagerName = PD_PASSWORDS[savedSegment].name;
                     currentPrefixes = PD_PASSWORDS[savedSegment].prefixes;
                     pdLoginBtn.disabled = true;
                     pdLoginBtn.textContent = 'A carregar...';
                     
-                    // Seleciona o dropdown
                     pdSegmentSelect.value = savedSegment;
                     
                     const sessionId = await getActiveSessionId();
@@ -1333,6 +1310,9 @@
     </script>
 </body>
 </html>
+
+
+
 
 
 
