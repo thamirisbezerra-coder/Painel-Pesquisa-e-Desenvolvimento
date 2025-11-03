@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Painel de P&D</title>
+    <title>Painel de P&D (v2)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
@@ -16,1729 +16,1411 @@
             margin-top: 0.5rem;
             padding: 0.5rem 0.75rem;
             border-radius: 0.375rem; /* rounded-md */
-            font-size: 0.8rem;
-            color: #4b5563; /* gray-600 */
         }
         .manager-reply {
-            background-color: #e0f2fe; /* light-blue-100 */
-            border-left: 3px solid #3b82f6; /* blue-500 */
+            background-color: #f3f4f6; /* bg-gray-100 */
+            border-left: 3px solid #9ca3af; /* border-gray-400 */
         }
         .seller-reply {
-            margin-left: 1rem;
-            background-color: #fffbeb; /* amber-50 */
-            border-left: 3px solid #f59e0b; /* amber-500 */
+            background-color: #f0f9ff; /* bg-blue-50 */
+            border-left: 3px solid #60a5fa; /* border-blue-400 */
+            margin-left: 1rem; /* Indent seller reply */
         }
-        .pd-note {
-            background-color: #f3e8ff; /* purple-100 */
-            border-left: 3px solid #9333ea; /* purple-600 */
-            font-style: italic;
+         .pd-note {
+            background-color: #fffbeb; /* bg-amber-50 */
+            border-left: 3px solid #fcd34d; /* border-amber-300 */
+            margin-left: 0.5rem;
         }
 
-
-        /* Estilos (Para o modal de amostras) */
+        /* Estilo para Amostra destacada no modal */
         .feedback-sample-item {
             border-bottom: 1px solid #e5e7eb;
             padding-bottom: 0.75rem;
             margin-bottom: 0.75rem;
-            transition: background-color 0.2s;
         }
-        .feedback-sample-item:last-child {
-            border-bottom: none;
-            margin-bottom: 0;
-            padding-bottom: 0;
+        .feedback-sample-item:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+        .feedback-sample-item.highlight {
+            background-color: #fffbeb; /* bg-amber-50 */
         }
-        /* Torna o canvas da barra clicável */
-        #feedback-type-chart {
+
+        /* NOVO: Estilo para os cards de login */
+        .login-card {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 1.25rem;
+            background-color: #f9fafb; /* bg-gray-50 */
+            border: 1px solid #e5e7eb; /* border-gray-200 */
+            border-radius: 0.5rem; /* rounded-lg */
+            font-weight: 600; /* font-semibold */
+            color: #374151; /* text-gray-700 */
+            transition: all 0.2s ease-in-out;
             cursor: pointer;
         }
-        /* Estilo para a tabela de senhas */
-        .password-cell {
-            font-family: monospace;
-            letter-spacing: 1px;
+        .login-card:hover {
+            background-color: #f3f4f6; /* bg-gray-100 */
+            border-color: #d1d5db; /* border-gray-300 */
         }
-
-        /* Estilo para o botão de login */
-        .login-btn {
-            background-color: #eff6ff; /* blue-50 */
-            border-color: #dbeafe; /* blue-100 */
+        .login-card.selected {
+            background-color: #3b82f6; /* bg-blue-600 */
+            color: white;
+            border-color: #2563eb; /* border-blue-700 */
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
         }
-        .login-btn:hover {
-            background-color: #dbeafe; /* blue-100 */
-            border-color: #bfdbfe; /* blue-200 */
+        .login-card-details {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem; /* space-x-3 */
         }
-
-        /* Animação para Post-its */
-        @keyframes slideInDown {
-            from {
-                opacity: 0;
-                transform: translateY(-10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+        .login-card-icon {
+            flex-shrink: 0;
+            width: 2.5rem; /* w-10 */
+            height: 2.5rem; /* h-10 */
+            border-radius: 9999px; /* rounded-full */
+            background-color: #e0e7ff; /* bg-indigo-100 */
+            color: #4f46e5; /* text-indigo-600 */
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
-        .post-it-card {
-            animation: slideInDown 0.3s ease-out;
+        .login-card.selected .login-card-icon {
+            background-color: white;
+            color: #3b82f6; /* bg-blue-600 */
         }
-
-        /* === ESTILOS PARA DESTAQUES === */
-        /* Estilo para item destacado no feed */
-        .highlighted-card {
-            background-color: #fffbeb; /* amber-50 */
-            border-color: #f59e0b; /* amber-500 */
+        .login-card-name {
+            font-size: 0.875rem; /* text-sm */
+            color: #6b7280; /* text-gray-500 */
+            font-weight: 500; /* font-medium */
         }
-        /* Estilo para item destacado no modal */
-        .highlighted-sample-item {
-            background-color: #fffbeb; /* amber-50 */
-            border-radius: 0.5rem; /* rounded-lg */
-            padding-left: 0.5rem;
-            padding-right: 0.5rem;
+        .login-card.selected .login-card-name {
+            color: #dbeafe; /* text-blue-100 */
         }
-
     </style>
 </head>
-<body class="text-gray-800 antialiased">
+<body class="text-gray-800">
 
-
-    <!-- === TELA DE LOGIN === -->
-    <div id="login-view" class="fixed inset-0 bg-gray-100 z-50 flex items-center justify-center p-4 transition-opacity duration-300">
-        <div class="bg-white w-full max-w-4xl rounded-2xl shadow-xl border border-gray-200 p-8">
-            <div class="text-center mb-8">
-                <!-- Ícone de Química (Frasco Simples) -->
-                <svg class="h-16 w-16 text-blue-600 mx-auto mb-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M9 3l6 0"></path>
-                  <path d="M10 9l4 0"></path>
-                  <path d="M10 3v6l-4 11h12l-4 -11v-6"></path>
-                </svg>
-
-                <h1 class="text-3xl font-bold text-gray-900">Painel de P&D</h1>
-                <p class="text-gray-600 mt-2">Selecione seu acesso para continuar.</p>
-            </div>
-
-            <!-- MENSAGEM DE BOAS-VINDAS -->
-            <p class="text-gray-600 mb-4 text-center">
-                Olá! Esta é a sua área de controle de feedback. Utilize seu acesso para verificar os produtos do seu segmento.
-            </p>
-
-            <!-- Botões dos Gerentes de P&D -->
-            <h3 class="text-lg font-semibold text-gray-700 mb-3 border-t pt-4">Acesso P&D</h3>
-            <div id="pd-login-buttons" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                <!-- Botões dos gerentes de P&D serão inseridos aqui pelo JS -->
-            </div>
-
-            <!-- Acesso Restrito (Colinha) -->
-            <div class="text-center mt-6 border-t pt-4">
-                <button id="open-admin-password-btn" class="text-sm text-gray-500 hover:text-blue-600 transition-all">
-                    Acesso Restrito (Senhas)
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- === MODAL DE SENHA (P&D) === -->
-    <div id="password-modal" class="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center p-4 hidden z-50">
-        <div class="bg-white rounded-2xl shadow-xl w-full max-w-sm p-8">
-            <h2 class="text-2xl font-bold text-center mb-2">Login P&D</h2>
-            <p id="password-modal-title" class="text-center text-gray-600 mb-6"></p>
-            <div>
-                <label for="password-input" class="block text-sm font-medium text-gray-700 mb-1">Senha</label>
-                <input type="password" id="password-input" class="w-full border-gray-300 rounded-lg shadow-sm py-2 px-3" placeholder="••••••••">
-                <p id="password-error" class="text-red-500 text-sm mt-2 h-4"></p>
-            </div>
-            <div class="mt-8 flex justify-end space-x-3">
-                <button id="cancel-password-btn" class="bg-gray-200 text-gray-700 font-semibold py-2 px-5 rounded-lg">Cancelar</button>
-                <button id="submit-password-btn" class="bg-blue-600 text-white font-bold py-2 px-5 rounded-lg">Entrar</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- === MODAL DE SENHA (ADMIN - COLINHA) === -->
-    <div id="admin-password-modal" class="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center p-4 hidden z-50">
-        <div class="bg-white rounded-2xl shadow-xl w-full max-w-sm p-8">
-            <h2 class="text-2xl font-bold text-center mb-6">Acesso Restrito</h2>
-            <div>
-                <label for="admin-password-input" class="block text-sm font-medium text-gray-700 mb-1">Senha de Administrador</label>
-                <input type="password" id="admin-password-input" class="w-full border-gray-300 rounded-lg shadow-sm py-2 px-3" placeholder="••••••••">
-                <p id="admin-password-error" class="text-red-500 text-sm mt-2 h-4"></p>
-            </div>
-            <div class="mt-8 flex justify-end space-x-3">
-                <button id="cancel-admin-password-btn" class="bg-gray-200 text-gray-700 font-semibold py-2 px-5 rounded-lg">Cancelar</button>
-                <button id="submit-admin-password-btn" class="bg-blue-600 text-white font-bold py-2 px-5 rounded-lg">Ver Senhas</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- === MODAL DA COLINHA (SENHAS) === -->
-    <div id="password-list-modal" class="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center p-4 hidden z-50">
-        <div class="bg-white rounded-2xl shadow-xl w-full max-w-2xl p-6">
-            <div class="flex justify-between items-center mb-4">
-                <h3 class="text-2xl font-bold">Acessos P&D</h3>
-                <button id="close-password-list-btn" class="text-3xl font-bold text-gray-500 hover:text-gray-800">&times;</button>
-            </div>
-             <!-- MENSAGEM DE BOAS-VINDAS -->
-            <p class="text-gray-600 mb-4 text-center">
-                Olá! Esta é a sua área de controle de feedback. Utilize seu acesso para verificar os produtos do seu segmento.
-            </p>
-            <div class="max-h-96 overflow-y-auto">
-                <table class="w-full min-w-full divide-y divide-gray-200">
-                    <thead class="bg-gray-50">
-                        <tr>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Responsável</th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Segmento</th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Senha</th>
-                        </tr>
-                    </thead>
-                    <tbody id="password-list-tbody" class="bg-white divide-y divide-gray-200">
-                        <!-- Senhas inseridas pelo JS -->
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-
-
-    <!-- === PAINEL PRINCIPAL (DASHBOARD) === -->
-    <div id="dashboard-view" class="hidden min-h-screen">
-
-        <!-- Cabeçalho Fixo -->
-        <header class="bg-white shadow-sm sticky top-0 z-30">
-            <div class="container mx-auto px-4 md:px-8 py-3 flex flex-wrap justify-between items-center gap-4">
-                <!-- Título e Sessão -->
-                <div class="flex items-center space-x-4">
-                    <div class="p-2 bg-blue-100 rounded-full">
-                         <!-- Ícone de Cabeçalho -->
-                         <svg class="h-8 w-8 text-blue-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                           <path d="M9 3l6 0"></path>
-                           <path d="M10 9l4 0"></path>
-                           <path d="M10 3v6l-4 11h12l-4 -11v-6"></path>
-                         </svg>
-                    </div>
-                    <div>
-                        <h1 id="dashboard-title" class="text-xl font-bold text-gray-800">Painel de P&D</h1>
-                        <p id="session-id-text" class="text-sm text-gray-500">Conectando...</p>
-                    </div>
+    <!-- Tela de Login -->
+    <div id="login-view" class="grid place-items-center min-h-screen p-4">
+        <div class="bg-white rounded-2xl shadow-lg border border-gray-200 w-full max-w-2xl p-8">
+            <div class="flex justify-center items-center gap-3 mb-6">
+                <div class="p-3 bg-indigo-100 rounded-full">
+                    <svg class="w-8 h-8 text-indigo-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09ZM18.259 8.715 18 9.75l-.259-1.035a3.375 3.375 0 0 0-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 0 0 2.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 0 0 2.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 0 0-2.456 2.456Z" />
+                    </svg>
                 </div>
+                <h1 class="text-3xl font-bold text-gray-800 text-center">Painel de P&D (v2)</h1>
+            </div>
+            <p class="text-gray-600 text-center mb-8">Selecione a sua área para aceder ao painel.</p>
+            
+            <!-- NOVO LAYOUT DE LOGIN (CARDS) -->
+            <div id="pd-login-buttons" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <!-- Cards de login serão inseridos aqui pelo JS -->
+            </div>
+            
+            <div class="mt-8">
+                <input type="password" id="pd-password-input" class="w-full border-gray-300 rounded-lg shadow-sm" placeholder="Digite a sua senha...">
+                <button id="pd-login-btn" class="mt-4 w-full bg-blue-600 text-white font-bold py-3 rounded-lg hover:bg-blue-700">Entrar</button>
+                <p id="login-error" class="text-red-500 text-sm mt-3 h-4 text-center"></p>
+            </div>
+        </div>
+    </div>
 
-                <!-- Filtros e Logout -->
-                <div class="flex items-center space-x-4">
-                    <!-- Filtro de Data -->
-                    <div class="flex items-center space-x-2">
-                        <label for="start-date-filter" class="text-sm font-medium text-gray-700">De:</label>
-                        <input type="date" id="start-date-filter" class="border-gray-300 rounded-lg shadow-sm text-sm p-1.5">
-                        <label for="end-date-filter" class="text-sm font-medium text-gray-700">Até:</label>
-                        <input type="date" id="end-date-filter" class="border-gray-300 rounded-lg shadow-sm text-sm p-1.5">
-                    </div>
-
-                    <!-- Botão de Notificações (Sino) -->
-                    <div class="relative">
-                        <button id="notification-btn" class="relative text-gray-500 hover:text-blue-600 focus:outline-none" title="Respostas dos Gerentes">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path></svg>
-                            <span id="notification-badge" class="absolute -top-2 -right-2 bg-red-600 text-white text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center hidden">0</span>
-                        </button>
-                    </div>
-
-                    <button id="logout-btn" class="bg-red-500 text-white font-semibold py-2 px-4 rounded-lg text-sm hover:bg-red-600 transition-colors">Sair</button>
-                </div>
+    <!-- Tela Principal (Dashboard) -->
+    <div id="dashboard" class="hidden container mx-auto p-4 md:p-8">
+        
+        <header class="flex flex-col md:flex-row justify-between md:items-center mb-8 gap-4">
+            <h1 id="dashboard-title" class="text-3xl font-bold text-gray-900">Dashboard</h1>
+            <div class="flex items-center gap-4">
+                <input id="global-search-input" type="text" placeholder="Pesquisar em todas as amostras..." class="border-gray-300 rounded-lg shadow-sm text-sm p-2 w-full md:w-64">
+                <!-- Sino de Notificação (será adicionado aqui) -->
+                <button id="logout-btn" class="bg-red-500 text-white font-semibold py-2 px-5 rounded-lg text-sm hover:bg-red-600">Sair</button>
             </div>
         </header>
 
-        <!-- Conteúdo Principal -->
-        <main class="container mx-auto p-4 md:p-8">
-            <div id="loading-message" class="text-center text-gray-600">Aguardando dados da sessão ativa...</div>
+        <!-- Estado de Carregamento -->
+        <div id="loading-state" class="hidden text-center p-12">
+            <h2 class="text-2xl font-semibold text-gray-700">A carregar dados...</h2>
+            <p id="loading-message" class="text-gray-500 mt-2">A processar amostras. Isto pode demorar um momento...</p>
+        </div>
 
-            <div id="dashboard-content" class="hidden space-y-8">
+        <!-- Conteúdo do Dashboard -->
+        <div id="dashboard-content" class="hidden">
+            <!-- Gráficos -->
+            <section class="mb-8 grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="bg-white p-6 rounded-2xl shadow-sm border">
+                    <h3 class="font-bold text-lg mb-2 text-center">Status (Todas Amostras)</h3>
+                    <div style="height: 250px;"><canvas id="segment-status-chart"></canvas></div>
+                </div>
+                <div class="bg-white p-6 rounded-2xl shadow-sm border">
+                    <h3 class="font-bold text-lg mb-2 text-center">Distribuição de Feedbacks</h3>
+                    <div style="height: 250px;"><canvas id="rejection-rate-chart"></canvas></div>
+                </div>
+            </section>
+
+            <!-- Feeds Lado a Lado -->
+            <section class="grid grid-cols-1 md:grid-cols-2 md:items-start gap-6 mb-10">
                 
-                <!-- Secção de Boas-vindas e Instruções -->
-                <section id="welcome-section" class="bg-white p-6 rounded-2xl shadow-sm border border-blue-200">
-                    <h2 class="text-xl font-bold text-blue-800 mb-3">Bem-vindo(a) ao Painel P&D!</h2>
-                    <!-- TEXTO DE BOAS-VINDAS ATUALIZADO -->
-                    <p class="text-gray-700 mb-2">
-                        O objetivo deste painel é visualizar os feedbacks dos produtos desenvolvidos pelo time de P&D.
-                        Use esta ferramenta para analisar os feedbacks e trabalhar em conjunto com a gestão para melhorar o nosso portfólio.
-                    </p>
-                    <ul class="list-disc list-inside text-sm text-gray-600 space-y-1">
-                        <li><strong>Destaques:</strong> Clique na <strong>estrela ☆</strong> no feed para marcar um feedback como importante. Ele ficará amarelo e subirá ao topo.</li>
-                        <li><strong>Gráficos Interativos:</strong> Clique nas barras do gráfico "Principais Tipos de Feedback" para ver os comentários dos vendedores.</li>
-                        <li><strong>Filtros de Data:</strong> Use os campos "De" e "Até" para analisar períodos específicos.</li>
-                        <li><strong>Feed de Observações:</strong> Acompanhe em tempo real as observações dos vendedores sobre os seus produtos.</li>
-                        <li><strong>Deixar Post-it:</strong> Use esta função no feed para deixar uma nota interna (só você e a gestão verão).</li>
-                        <li><strong>Responder Gestor:</strong> Use esta função para enviar uma resposta direta ao Gestor do segmento (ele será notificado).</li>
-                    </ul>
-                </section>
-
-
-                <!-- KPIs -->
+                <!-- Coluna Feed Observações -->
                 <section>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-200">
-                            <h3 class="text-sm font-medium text-gray-500 uppercase">Total de Amostras</h3>
-                            <p id="kpi-total-samples" class="text-4xl font-bold text-blue-600 mt-2">0</p>
-                        </div>
-                        <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-200">
-                            <h3 class="text-sm font-medium text-gray-500 uppercase">Amostras Pendentes</h3>
-                            <p id="kpi-pending-samples" class="text-4xl font-bold text-yellow-500 mt-2">0</p>
-                        </div>
-                        <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-200">
-                            <h3 class="text-sm font-medium text-gray-500 uppercase">Feedbacks Recebidos</h3>
-                            <p id="kpi-feedbacks-count" class="text-4xl font-bold text-green-600 mt-2">0</p>
-                        </div>
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="text-2xl font-bold text-gray-900">Feed de Observações</h2>
+                        <select id="observation-segment-filter" class="border-gray-300 rounded-lg shadow-sm text-sm p-1">
+                             <option value="">Todos os Segmentos</option>
+                             <!-- Populado por JS -->
+                        </select>
+                    </div>
+                    <div id="observations-feed-list" class="space-y-4 h-[32rem] overflow-y-auto bg-white p-4 rounded-2xl shadow-sm border">
+                        <p class="text-gray-500 placeholder-observation">Nenhuma observação encontrada.</p>
                     </div>
                 </section>
 
-                <!-- Gráficos -->
-                <section class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div class="bg-white p-6 rounded-2xl shadow-sm border"><h3 class="font-bold text-lg mb-2 text-center">Índice de Reprovação</h3><div style="height: 300px;"><canvas id="rejection-chart"></canvas></div></div>
-                    <div class="bg-white p-6 rounded-2xl shadow-sm border"><h3 class="font-bold text-lg mb-2 text-center">Principais Tipos de Feedback</h3><div style="height: 300px;"><canvas id="feedback-type-chart"></canvas></div></div>
-                </section>
-
-                <!-- Listas (Feed e Post-its) -->
-                <section class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-
-                    <!-- Coluna do Feed de Observações -->
-                    <div class="bg-white p-6 rounded-2xl shadow-sm border lg:col-span-1 flex flex-col">
-                        <div class="flex flex-col justify-between items-center mb-4 gap-4">
-                            <h2 class="text-xl font-bold text-gray-900 w-full">Feed de Observações</h2>
-                            <!-- ATUALIZAÇÃO DE LAYOUT: Filtros empilhados -->
-                            <div class="flex flex-col gap-2 w-full">
-                                <!-- Pesquisa por Vendedor -->
-                                <input type="text" id="seller-search-input" placeholder="Pesquisar Vendedor..." class="border-gray-300 rounded-lg shadow-sm text-sm p-1.5 w-full">
-                                <!-- Filtro de Feedback (para o feed) -->
-                                <select id="observation-feedback-filter" class="border-gray-300 rounded-lg shadow-sm text-sm p-1.5 w-full">
-                                    <option value="TODOS">Todos Feedbacks</option>
-                                    <!-- Opções de Feedback inseridas pelo JS -->
-                                </select>
-                            </div>
-                        </div>
-                        <!-- BARRA DE ROLAGEM ADICIONADA -->
-                        <div id="observations-feed-list" class="space-y-4 overflow-y-auto pr-2" style="max-height: 28rem;">
-                            <p class="text-gray-500">Nenhuma observação encontrada.</p>
-                            <!-- Observações inseridas pelo JS -->
-                        </div>
+                <!-- Coluna Post-its P&D -->
+                <section>
+                    <h2 class="text-2xl font-bold text-gray-900 mb-4">Post-its (Notas Internas P&D)</h2>
+                    <div class="mb-4">
+                        <textarea id="post-it-input" rows="2" class="w-full border-gray-300 rounded-lg shadow-sm" placeholder="Escreva uma nota rápida..."></textarea>
+                        <button id="add-post-it-btn" class="mt-2 w-full bg-amber-500 text-white font-semibold py-2 rounded-lg hover:bg-amber-600">Adicionar Post-it</button>
                     </div>
-
-                    <!-- Coluna de Post-its (Notas Internas) -->
-                    <div class="bg-white p-6 rounded-2xl shadow-sm border lg:col-span-1 flex flex-col">
-                        <h2 class="text-xl font-bold text-gray-900 mb-4">Meus Post-its (Interno)</h2>
-                        <!-- Formulário para novo Post-it -->
-                        <div class="mb-4">
-                            <textarea id="new-post-it-input" rows="3" class="w-full border-gray-300 rounded-lg shadow-sm text-sm" placeholder="Deixe uma nota interna aqui... (Ex: 'Verificar lote deste produto')"></textarea>
-                            <button id="add-post-it-btn" class="w-full mt-2 bg-purple-600 text-white font-bold py-2 rounded-lg hover:bg-purple-700 transition-all">Adicionar Post-it</button>
-                        </div>
-                        <!-- Lista de Post-its -->
-                        <div id="post-it-list" class="space-y-3 overflow-y-auto pr-2" style="max-height: 20rem;">
-                             <p class="text-gray-500 text-sm">Nenhum post-it encontrado.</p>
-                            <!-- Post-its inseridos pelo JS -->
-                        </div>
+                    <div id="post-it-list" class="space-y-3 h-[24rem] overflow-y-auto bg-gray-50 p-4 rounded-2xl shadow-sm border border-gray-200">
+                        <p class="text-gray-500 placeholder-postit">Nenhum post-it encontrado.</p>
                     </div>
                 </section>
+            </section>
 
-            </div>
-        </main>
+            <!-- Tabela de Acessos (Admin) -->
+            <section id="admin-access-section" class="hidden bg-white p-6 rounded-2xl shadow-sm border mb-10">
+                <h2 class="text-2xl font-bold text-gray-900 mb-4">Acessos P&D (Admin)</h2>
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Área / Segmento</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Responsável</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Senha</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Ação</th>
+                            </tr>
+                        </thead>
+                        <tbody id="pd-access-tbody" class="bg-white divide-y divide-gray-200">
+                            <!-- Linhas inseridas pelo JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </div>
     </div>
 
-    <!-- === MODAL: AMOSTRAS (DO GRÁFICO) === -->
-    <div id="feedback-samples-modal" class="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center p-4 hidden z-50">
-        <div class="bg-white rounded-2xl shadow-xl w-full max-w-2xl p-6 flex flex-col">
+    <!-- Modais -->
+    
+    <!-- Modal de Amostras por Feedback (Genérico) -->
+    <div id="feedback-samples-modal" class="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center p-4 hidden z-30">
+        <div class="bg-white rounded-2xl shadow-xl w-full max-w-4xl p-6">
             <div class="flex justify-between items-center mb-4 border-b pb-3">
-                <h3 id="feedback-samples-title" class="text-xl font-bold">Amostras com Feedback:</h3>
-                <button id="close-feedback-samples-btn" class="text-3xl font-bold text-gray-500 hover:text-gray-800">&times;</button>
+                <h3 id="feedback-samples-title" class="text-xl font-bold">Amostras</h3>
+                <button id="close-feedback-samples-btn" class="text-2xl font-bold text-gray-500 hover:text-gray-800">&times;</button>
             </div>
-            <!-- BARRA DE ROLAGEM ADICIONADA -->
-            <div id="feedback-samples-list" class="space-y-3 max-h-[60vh] overflow-y-auto pr-2">
+            <div id="feedback-samples-list" class="space-y-3 max-h-[70vh] overflow-y-auto pr-2">
                 <p class="text-gray-500">A carregar detalhes...</p>
-                <!-- Amostras inseridas pelo JS -->
             </div>
         </div>
     </div>
 
-    <!-- === MODAL: RESPONDER GESTOR (EXTERNO) === -->
-    <div id="reply-gestor-modal" class="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center p-4 hidden z-40">
+    <!-- Modal de Resposta P&D (substitui o 'reply-modal') -->
+    <div id="pd-reply-modal" class="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center p-4 hidden z-40">
         <div class="bg-white rounded-2xl shadow-xl w-full max-w-xl p-6">
-            <h3 class="text-xl font-bold mb-4">Responder ao Gestor (Externo)</h3>
+            <h3 class="text-xl font-bold mb-4">Responder ao Vendedor (via P&D)</h3>
             <div class="mb-4 p-3 bg-gray-100 rounded border text-sm">
-                <p class="font-semibold" id="reply-gestor-modal-product"></p>
-                <p class="text-xs text-gray-600 mb-1" id="reply-gestor-modal-seller"></p>
-                <p class="italic" id="reply-gestor-modal-observation">"</p>
+                <p class="font-semibold" id="pd-reply-modal-product"></p>
+                <p class="text-xs text-gray-600 mb-1" id="pd-reply-modal-seller"></p>
+                <p class="italic" id="pd-reply-modal-observation">"${' '}"</p>
             </div>
             <div class="space-y-4">
-                <div>
-                    <label for="pd-name-input" class="block text-sm font-medium text-gray-700">Seu Nome (P&D)</label>
-                    <input type="text" id="pd-name-input" class="mt-1 w-full border-gray-300 rounded-lg shadow-sm bg-gray-100" placeholder="Digite seu nome" readonly>
-                </div>
-                <div>
-                    <label for="reply-gestor-message-input" class="block text-sm font-medium text-gray-700">Sua Resposta (Visível ao Gestor)</label>
-                    <textarea id="reply-gestor-message-input" rows="3" class="mt-1 w-full border-gray-300 rounded-lg shadow-sm" placeholder="Digite sua resposta aqui..."></textarea>
-                </div>
+                  <div>
+                       <label for="pd-reply-message-input" class="block text-sm font-medium text-gray-700">Sua Resposta (P&D)</label>
+                       <textarea id="pd-reply-message-input" rows="3" class="mt-1 w-full border-gray-300 rounded-lg shadow-sm" placeholder="Digite sua resposta aqui..."></textarea>
+                  </div>
             </div>
             <div class="mt-6 flex justify-end space-x-3">
-                <button id="cancel-reply-gestor-btn" class="bg-gray-200 text-gray-700 font-semibold py-2 px-5 rounded-lg">Cancelar</button>
-                <button id="send-reply-gestor-btn" class="bg-blue-600 text-white font-bold py-2 px-5 rounded-lg">Enviar Resposta</button>
+                 <button id="cancel-pd-reply-btn" class="bg-gray-200 text-gray-700 font-semibold py-2 px-5 rounded-lg">Cancelar</button>
+                 <button id="send-pd-reply-btn" class="bg-blue-600 text-white font-bold py-2 px-5 rounded-lg">Enviar Resposta</button>
             </div>
         </div>
     </div>
-
-    <!-- === MODAL: DEIXAR POST-IT (INTERNO) === -->
-    <div id="post-it-modal" class="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center p-4 hidden z-40">
+    
+    <!-- Modal de Adicionar Nota Post-it (a partir de uma observação) -->
+    <div id="postit-modal" class="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center p-4 hidden z-40">
         <div class="bg-white rounded-2xl shadow-xl w-full max-w-xl p-6">
-            <h3 class="text-xl font-bold mb-4">Deixar Post-it (Interno)</h3>
+            <h3 class="text-xl font-bold mb-4">Adicionar Nota P&D</h3>
             <div class="mb-4 p-3 bg-gray-100 rounded border text-sm">
-                <p class="font-semibold" id="post-it-modal-product"></p>
-                <p class="text-xs text-gray-600 mb-1" id="post-it-modal-seller"></p>
-                <p class="italic" id="post-it-modal-observation">"</p>
+                <p class="font-semibold" id="postit-modal-context"></p>
+                <!-- NOVO: Descrição adicionada -->
+                <p class="text-xs text-gray-600" id="postit-modal-description"></p>
+                <p class="italic mt-2" id="postit-modal-observation">"${' '}"</p>
             </div>
             <div class="space-y-4">
-                 <div>
-                    <label for="pd-name-post-it-input" class="block text-sm font-medium text-gray-700">Seu Nome (P&D)</label>
-                    <input type="text" id="pd-name-post-it-input" class="mt-1 w-full border-gray-300 rounded-lg shadow-sm bg-gray-100" placeholder="Digite seu nome" readonly>
-                </div>
-                <div>
-                    <label for="post-it-message-input" class="block text-sm font-medium text-gray-700">Sua Nota (Visível apenas para P&D e Gestão)</label>
-                    <textarea id="post-it-message-input" rows="3" class="mt-1 w-full border-gray-300 rounded-lg shadow-sm" placeholder="Digite sua nota interna..."></textarea>
-                </div>
+                  <div>
+                       <label for="postit-message-input" class="block text-sm font-medium text-gray-700">Nota Interna P&D</label>
+                       <textarea id="postit-message-input" rows="3" class="mt-1 w-full border-gray-300 rounded-lg shadow-sm" placeholder="Digite a nota..."></textarea>
+                  </div>
             </div>
             <div class="mt-6 flex justify-end space-x-3">
-                <button id="cancel-post-it-btn" class="bg-gray-200 text-gray-700 font-semibold py-2 px-5 rounded-lg">Cancelar</button>
-                <button id="send-post-it-btn" class="bg-purple-600 text-white font-bold py-2 px-5 rounded-lg">Guardar Post-it</button>
+                 <button id="cancel-postit-btn" class="bg-gray-200 text-gray-700 font-semibold py-2 px-5 rounded-lg">Cancelar</button>
+                 <button id="send-postit-btn" class="bg-amber-500 text-white font-semibold py-2 px-5 rounded-lg">Adicionar Nota</button>
             </div>
         </div>
     </div>
 
-
-    <!-- === MODAL: NOTIFICAÇÕES (RESPOSTAS DOS GESTORES) === -->
-    <div id="notification-modal" class="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center p-4 hidden z-50">
-        <div class="bg-white rounded-2xl shadow-xl w-full max-w-2xl p-6 flex flex-col">
-            <div class="flex justify-between items-center mb-4 border-b pb-3">
-                <h3 class="text-xl font-bold">Novas Respostas de Gestores</h3>
-                <button id="close-notification-btn" class="text-3xl font-bold text-gray-500 hover:text-gray-800">&times;</button>
+    <!-- Modal de Notificações (Respostas dos Gestores) -->
+    <div id="notification-modal" class="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center p-4 hidden z-40">
+        <div class="bg-white rounded-2xl shadow-xl w-full max-w-2xl p-6">
+            <div class="flex justify-between items-center mb-4 border-b pb-2">
+                <h3 class="text-xl font-bold">Respostas (Vendedores/Gerentes)</h3>
+                <button id="close-notification-btn" class="text-2xl font-bold text-gray-500 hover:text-gray-800">&times;</button>
             </div>
-            <!-- BARRA DE ROLAGEM ADICIONADA -->
-            <div id="notification-list" class="space-y-3 max-h-[60vh] overflow-y-auto pr-2">
-                <p class="text-gray-500">Nenhuma resposta nova.</p>
-                <!-- Notificações inseridas pelo JS -->
+            <div id="notification-list" class="space-y-4 max-h-[60vh] overflow-y-auto pr-2">
+                <p class="text-gray-500">Nenhuma resposta recebida.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Alerta Customizado -->
+    <div id="custom-alert" class="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center p-4 hidden z-50">
+        <div class="bg-white rounded-2xl shadow-xl w-full max-w-md p-6">
+            <h3 id="custom-alert-title" class="text-xl font-bold mb-4 text-red-600">Erro na Operação</h3>
+            <p id="custom-alert-message" class="text-gray-700 mb-6">Ocorreu um erro.</p>
+            <div class="flex justify-end">
+                <button id="custom-alert-ok-btn" class="bg-blue-600 text-white font-bold py-2 px-5 rounded-lg">OK</button>
             </div>
         </div>
     </div>
 
 
     <script type="module">
-        // Importações do Firebase
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getFirestore, collection, onSnapshot, doc, getDoc, getDocs, updateDoc, query, serverTimestamp, addDoc, where, writeBatch, orderBy, Timestamp, deleteDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js"; // Adicionado setDoc
+        import { 
+            getFirestore, collection, onSnapshot, doc, getDoc, getDocs, 
+            updateDoc, query, orderBy, serverTimestamp, addDoc, limit, where,
+            collectionGroup, Timestamp, runTransaction, writeBatch, deleteDoc
+        } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
         import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-
-        // === CONFIGURAÇÃO ===
 
         // Configuração do Firebase
         const firebaseConfig = {
-             apiKey: "AIzaSyAF_TE28Tbp2nakBGTva1yEEbBCqWvRdJQ",
-             authDomain: "feedback-vendedores.firebaseapp.com",
-             projectId: "feedback-vendedores",
-             storageBucket: "feedback-vendedores.firebasestorage.app",
-             messagingSenderId: "650880422749",
-             appId: "1:650880422749:web:54a258964a6ca8db180eb4",
-             measurementId: "G-TG588KDK0C"
+            apiKey: "AIzaSyAF_TE28Tbp2nakBGTva1yEEbBCqWvRdJQ",
+            authDomain: "feedback-vendedores.firebaseapp.com",
+            projectId: "feedback-vendedores",
+            storageBucket: "feedback-vendedores.firebasestorage.app",
+            messagingSenderId: "650880422749",
+            appId: "1:650880422749:web:54a258964a6ca8db180eb4",
+            measurementId: "G-TG588KDK0C"
         };
 
-        // Configuração dos Responsáveis de P&D (COM NOMES DOS SEGMENTOS)
-        // ATUALIZADO: Adicionado 'DLS' para Lácteos
-        const PD_CONFIG = {
-            'CARLOS YOSHIOKA': { 
-                segments: ['DAR'], 
-                segmentNames: ['Aromas Doces, Salgados e Molhos'], 
-                password: 'pd_carlos1' 
-            },
-            'FLAVIA OLIVEIRA': { 
-                segments: ['DLA', 'DLS'], // ATUALIZADO AQUI
-                segmentNames: ['Lácteos'], 
-                password: 'pd_flavia2' 
-            },
-            'ANDERSON MORALES': { 
-                segments: ['DES'], 
-                segmentNames: ['Cárneos'], 
-                password: 'pd_anderson3' 
-            },
-            'DAISE SANTOS': { 
-                segments: ['DMIX'], 
-                segmentNames: ['Nutracêuticos'], 
-                password: 'pd_daise4' 
-            },
-            'ADRIANA SOUZA': { 
-                segments: ['DPAN'], 
-                segmentNames: ['Panificação'], 
-                password: 'pd_adriana5' 
-            },
-            'REBECA SOUSA': { 
-                segments: ['DNA'], 
-                segmentNames: ['Nutrição Animal'], 
-                password: 'pd_rebeca6' 
-            },
-            'MARGARIDA VOEROES': { 
-                segments: ['DSO'], 
-                segmentNames: ['Sorvetes'], 
-                password: 'pd_margarida7' 
-            },
-        };
-
-        // Senha do Admin (para ver a colinha)
-        const ADMIN_PASSWORD = "admin123";
-
-        // Constantes de Feedback (para os gráficos)
-        const CANONICAL_APPROVED = ['COM PEDIDO', 'APROVADO SEM PEDIDO'];
-        const CANONICAL_REJECTED = ['APRESENTAÇÃO PRÓ ATIVA', 'CALIBRE', 'EXTRAVIADA', 'FORA DA ESPECIFIAÇÃO DO CLIENTE', 'FORA DO PERFIL DO CLIENTE', 'FRACA / ESTOURANDO / COM CHUVEIRO', 'PRODUTO DESCONTINUADO', 'QUANTIDADE INSUFICIENTE', 'REPRESENTAÇÃO / DISTRIBUIDOR', 'SEM RETORNO DO CLIENTE', 'EXPORTACAO'];
-        const CANONICAL_EVENTS = ['EVENTO'];
-        const CANONICAL_PENDING = ['AMOSTRA NÃO TESTADA', 'EM ANÁLISE', 'AMOSTRA SEM FEEDBACK'];
-
-        // === INICIALIZAÇÃO DO FIREBASE ===
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
         const auth = getAuth(app);
 
-        // === ELEMENTOS DA DOM ===
+        // Definições de Acesso
+        const PD_PASSWORDS = {
+            'Panificação': { name: 'Adriana', pass: 'pd_adriana5' },
+            'Cárneos': { name: 'Anderson', pass: 'pd_anderson3' },
+            'Aromas Doces, Salgados e Molhos': { name: 'Carlos', pass: 'pd_carlos1' },
+            'Nutracêuticos': { name: 'Daise', pass: 'pd_daise4' },
+            'Lácteos': { name: 'Flavia', pass: 'pd_flavia2' },
+            'Sorvetes': { name: 'Margarida', pass: 'pd_margarida7' },
+            'Nutrição Animal': { name: 'Rebeca', pass: 'pd_rebeca6' },
+            'ADMIN': { name: 'Admin', pass: 'admin123' } // Senha de Admin
+        };
+        const PENDING_STATUSES = ['EM ANÁLISE', 'AMOSTRA SEM FEEDBACK', 'SEM RETORNO DO CLIENTE', 'AMOSTRA NÃO TESTADA', 'PENDENTE'];
+        
+        // --- Elementos DOM ---
         const loginView = document.getElementById('login-view');
         const pdLoginButtons = document.getElementById('pd-login-buttons');
-        const passwordModal = document.getElementById('password-modal');
-        const passwordModalTitle = document.getElementById('password-modal-title');
-        const passwordInput = document.getElementById('password-input');
-        const passwordError = document.getElementById('password-error');
-        const cancelPasswordBtn = document.getElementById('cancel-password-btn');
-        const submitPasswordBtn = document.getElementById('submit-password-btn');
-
-        // Admin/Colinha
-        const openAdminPasswordBtn = document.getElementById('open-admin-password-btn');
-        const adminPasswordModal = document.getElementById('admin-password-modal');
-        const adminPasswordInput = document.getElementById('admin-password-input');
-        const adminPasswordError = document.getElementById('admin-password-error');
-        const cancelAdminPasswordBtn = document.getElementById('cancel-admin-password-btn');
-        const submitAdminPasswordBtn = document.getElementById('submit-admin-password-btn');
-        const passwordListModal = document.getElementById('password-list-modal');
-        const passwordListTbody = document.getElementById('password-list-tbody');
-        const closePasswordListBtn = document.getElementById('close-password-list-btn');
-
-        const dashboardView = document.getElementById('dashboard-view');
+        const pdPasswordInput = document.getElementById('pd-password-input');
+        const pdLoginBtn = document.getElementById('pd-login-btn');
+        const loginError = document.getElementById('login-error');
+        const dashboard = document.getElementById('dashboard');
         const dashboardTitle = document.getElementById('dashboard-title');
-        const sessionIdText = document.getElementById('session-id-text');
         const logoutBtn = document.getElementById('logout-btn');
+        const globalSearchInput = document.getElementById('global-search-input');
+        const loadingState = document.getElementById('loading-state');
         const loadingMessage = document.getElementById('loading-message');
         const dashboardContent = document.getElementById('dashboard-content');
-
-        // Filtros de Data
-        const startDateFilter = document.getElementById('start-date-filter');
-        const endDateFilter = document.getElementById('end-date-filter');
-
-        // Notificações (Respostas dos Gestores)
-        const notificationBtn = document.getElementById('notification-btn');
-        const notificationBadge = document.getElementById('notification-badge');
+        const observationSegmentFilter = document.getElementById('observation-segment-filter');
+        const observationsFeedList = document.getElementById('observations-feed-list');
+        const postItInput = document.getElementById('post-it-input');
+        const addPostItBtn = document.getElementById('add-post-it-btn');
+        const postItList = document.getElementById('post-it-list');
+        const adminAccessSection = document.getElementById('admin-access-section');
+        const pdAccessTbody = document.getElementById('pd-access-tbody');
+        const feedbackSamplesModal = document.getElementById('feedback-samples-modal');
+        const feedbackSamplesTitle = document.getElementById('feedback-samples-title');
+        const feedbackSamplesList = document.getElementById('feedback-samples-list');
+        const closeFeedbackSamplesBtn = document.getElementById('close-feedback-samples-btn');
+        const pdReplyModal = document.getElementById('pd-reply-modal');
+        const pdReplyModalProduct = document.getElementById('pd-reply-modal-product');
+        const pdReplyModalSeller = document.getElementById('pd-reply-modal-seller');
+        const pdReplyModalObservation = document.getElementById('pd-reply-modal-observation');
+        const pdReplyMessageInput = document.getElementById('pd-reply-message-input');
+        const cancelPdReplyBtn = document.getElementById('cancel-pd-reply-btn');
+        const sendPdReplyBtn = document.getElementById('send-pd-reply-btn');
+        const postitModal = document.getElementById('postit-modal');
+        const postitModalContext = document.getElementById('postit-modal-context');
+        const postitModalDescription = document.getElementById('postit-modal-description'); // NOVO
+        const postitModalObservation = document.getElementById('postit-modal-observation');
+        const postitMessageInput = document.getElementById('postit-message-input');
+        const cancelPostitBtn = document.getElementById('cancel-postit-btn');
+        const sendPostitBtn = document.getElementById('send-postit-btn');
         const notificationModal = document.getElementById('notification-modal');
         const notificationList = document.getElementById('notification-list');
         const closeNotificationBtn = document.getElementById('close-notification-btn');
+        const notificationBtn = document.getElementById('notification-btn'); // Será criado dinamicamente
+        const customAlert = document.getElementById('custom-alert');
+        const customAlertTitle = document.getElementById('custom-alert-title');
+        const customAlertMessage = document.getElementById('custom-alert-message');
+        const customAlertOkBtn = document.getElementById('custom-alert-ok-btn');
 
-        // KPIs
-        const kpiTotalSamples = document.getElementById('kpi-total-samples');
-        const kpiPendingSamples = document.getElementById('kpi-pending-samples');
-        const kpiFeedbacksCount = document.getElementById('kpi-feedbacks-count');
-
-        // Gráficos
-        const rejectionChartCanvas = document.getElementById('rejection-chart');
-        const feedbackTypeChartCanvas = document.getElementById('feedback-type-chart');
-
-        // Feed de Observações
-        const observationsFeedList = document.getElementById('observations-feed-list');
-        const observationFeedbackFilter = document.getElementById('observation-feedback-filter');
-        const sellerSearchInput = document.getElementById('seller-search-input'); // Pesquisa Vendedor
-
-        // Post-its (Notas Internas)
-        const newPostItInput = document.getElementById('new-post-it-input');
-        const addPostItBtn = document.getElementById('add-post-it-btn');
-        const postItList = document.getElementById('post-it-list');
-
-        // Modal de Amostras (do Gráfico)
-        const feedbackSamplesModal = document.getElementById('feedback-samples-modal');
-        const feedbackSamplesList = document.getElementById('feedback-samples-list');
-        const feedbackSamplesTitle = document.getElementById('feedback-samples-title');
-        const closeFeedbackSamplesBtn = document.getElementById('close-feedback-samples-btn');
-
-        // Modal de Resposta ao GESTOR (Externo)
-        const replyGestorModal = document.getElementById('reply-gestor-modal');
-        const replyGestorModalProduct = document.getElementById('reply-gestor-modal-product');
-        const replyGestorModalSeller = document.getElementById('reply-gestor-modal-seller');
-        const replyGestorModalObservation = document.getElementById('reply-gestor-modal-observation');
-        const pdNameInput = document.getElementById('pd-name-input');
-        const replyGestorMessageInput = document.getElementById('reply-gestor-message-input');
-        const cancelReplyGestorBtn = document.getElementById('cancel-reply-gestor-btn');
-        const sendReplyGestorBtn = document.getElementById('send-reply-gestor-btn');
-        
-        // Modal de POST-IT (Interno)
-        const postItModal = document.getElementById('post-it-modal');
-        const postItModalProduct = document.getElementById('post-it-modal-product');
-        const postItModalSeller = document.getElementById('post-it-modal-seller');
-        const postItModalObservation = document.getElementById('post-it-modal-observation');
-        const pdNamePostItInput = document.getElementById('pd-name-post-it-input');
-        const postItMessageInput = document.getElementById('post-it-message-input');
-        const cancelPostItBtn = document.getElementById('cancel-post-it-btn');
-        const sendPostItBtn = document.getElementById('send-post-it-btn');
-
-
-        // === ESTADO GLOBAL ===
-        let currentUser = null; // { name: 'CARLOS YOSHIOKA', segments: ['DAR'], segmentNames: [...], role: 'pd' }
-        let currentManagerToLogin = null;
+        // --- Estado Global ---
         let currentSessionId = null;
-
-        let allSamples = []; // Todas as amostras de todos os vendedores
-        let allManagerReplies = []; // Cache de respostas dos gestores (notificacoesVendedor)
-        let allPdReplies = []; // Cache de respostas do P&D (respostasVendedor)
-        let allPdPostits = []; // Cache de post-its internos
-        let allUnreadManagerReplies = []; // Cache de respostas *não lidas* dos gestores
-        let allPdDestaques = []; // Cache for highlighted sample IDs
-
+        let currentSegment = null; // Segmento do P&D logado
+        let currentPdName = null; // Nome do P&D logado
+        let allCurrentSamples = []; // Armazena TODAS as amostras carregadas
+        let sellerSegmentsCache = {}; // Cache de segmentos de vendedores
+        let managerRepliesListenerUnsubscribe = null; // Respostas dos gestores
+        let sellerRepliesListenerUnsubscribe = null; // Respostas dos vendedores
+        let pdPostitsListenerUnsubscribe = null; // Notas internas P&D
+        let destaquesListenerUnsubscribe = null; // Amostras destacadas
+        let dataListenersUnsubscribe = [];
         let chartInstances = {};
-        let currentSampleForReply = null; // Usado por ambos os modais de resposta
-
-        // Listeners do Firebase
-        let dataListenerUnsubscribe = null;
-        let managerRepliesListenerUnsubscribe = null;
-        let pdRepliesListenerUnsubscribe = null;
-        let pdPostitsListenerUnsubscribe = null;
-        let pdDestaquesListenerUnsubscribe = null; // Listener para destaques
-
-        // === FUNÇÕES DE UTILIDADE ===
+        let currentSampleForReply = null;
+        let currentSampleForPostIt = null;
+        let allManagerReplies = [];
+        let allSellerReplies = [];
+        let allPdPostits = [];
+        let highlightedSamplesCache = [];
         
-        // Função para normalizar texto (Ex: "João" -> "JOAO")
+        // Classe de Gestão de Carga
+        class DataLoadManager {
+            constructor(totalItems, onComplete) {
+                this.totalItems = totalItems;
+                this.loadedItems = 0;
+                this.allData = [];
+                this.onComplete = onComplete;
+                this.hasCompleted = false;
+            }
+
+            sellerLoaded(sellerName, samples) {
+                this.loadedItems++;
+                const samplesWithOwner = samples.map(s => ({ ...s, sellerName }));
+                this.allData = this.allData.concat(samplesWithOwner);
+                
+                const progress = this.totalItems > 0 ? (this.loadedItems / this.totalItems) * 100 : 100;
+                loadingMessage.textContent = `A processar... (${this.loadedItems}/${this.totalItems} vendedores carregados)`;
+
+                if (this.loadedItems === this.totalItems && !this.hasCompleted) {
+                    this.hasCompleted = true;
+                    // O P&D (não-admin) vê TUDO, o filtro é aplicado no feed
+                    this.onComplete(this.allData);
+                }
+            }
+        }
+
+        // --- Funções Utilitárias ---
         const normalizeText = (text = '') => text ? text.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toUpperCase().trim() : '';
 
-        // Padrão de feedback (do painelgestor.html)
-        function getCanonicalFeedback(feedback) {
-             if (!feedback) return '';
-            const normalized = normalizeText(feedback.replace(/^(A - |R - |E - |P - )/, '').trim());
-            const mapping = {
-                'APROVADO COM PEDIDO': 'COM PEDIDO',
-                'APROVADA SEM PEDIDO': 'APROVADO SEM PEDIDO',
-                'INNOVATION / EVENTOS': 'EVENTO',
-                'AMOSTRA NAO TESTADA': 'AMOSTRA NÃO TESTADA',
-                'EM ANALISE': 'EM ANÁLISE'
-                // Adicione mais mapeamentos se necessário
-            };
-            return mapping[normalized] || normalized;
+        function showAlert(message, title = "Erro na Operação", color = "text-red-600") {
+            customAlertTitle.textContent = title;
+            customAlertMessage.innerHTML = message; // Usar innerHTML para permitir <br>
+            customAlertTitle.className = `text-xl font-bold mb-4 ${color}`;
+            customAlert.classList.remove('hidden');
+        }
+        customAlertOkBtn.addEventListener('click', () => customAlert.classList.add('hidden'));
+
+        function handleFirestoreError(error, operationContext) {
+            console.error(`Erro em "${operationContext}":`, error);
+            let message = `Não foi possível completar a operação: ${operationContext}.<br><br>Erro: ${error.message}`;
+            let title = "Erro na Operação";
+            let color = "text-red-600";
+
+            if (error.code === 'resource-exhausted' || (error.message && error.message.includes('Quota exceeded'))) {
+                message = "O limite diário de uso do banco de dados foi atingido (Quota Exceeded). Novas alterações não serão salvas hoje.<br><br>Por favor, tente novamente amanhã ou contate o suporte.";
+                title = "Limite da Plataforma Atingido";
+                color = "text-amber-600";
+            } else if (error.code === 'permission-denied') {
+                message = "Permissão negada. Verifique as regras de segurança do Firebase.";
+            }
+            // Chama showAlert com todos os argumentos
+            showAlert(message, title, color);
         }
 
-        // Determina o segmento P&D com base no código do produto
-        function getPdSegmentFromProductCode(produto) {
-            const normalizedProduto = normalizeText(produto); // Get the full normalized product code
-            if (!normalizedProduto) return null; // Retorna nulo se o produto for inválido
+        // --- Lógica de Carregamento de Dados (v2) ---
+
+        // CORREÇÃO: Funções movidas para cima para evitar ReferenceError
+        
+        // Listeners de Comunicação (para o Sino)
+        function listenForManagerReplies(sessionId) {
+            if (managerRepliesListenerUnsubscribe) managerRepliesListenerUnsubscribe();
+            const q = query(collection(db, "sessoes", sessionId, "notificacoesVendedor"));
             
-            for (const managerName in PD_CONFIG) {
-                const config = PD_CONFIG[managerName];
-                // Itera sobre os códigos de segmento (ex: ['DAR'] ou ['DMIX'])
-                for (const segmentCode of config.segments) {
-                    // Verifica se o código do produto COMEÇA COM o código do segmento
-                    if (normalizedProduto.startsWith(segmentCode)) {
-                        return { name: managerName, ...config };
-                    }
-                }
-            }
-            return null; // Nenhum P&D responsável
-        }
-
-        // === LÓGICA DE LOGIN ===
-
-        // 1. Preenche os botões de login do P&D (USA NOMES DOS SEGMENTOS)
-        function populatePdButtons() {
-            pdLoginButtons.innerHTML = '';
-            Object.keys(PD_CONFIG).sort().forEach(managerName => {
-                const config = PD_CONFIG[managerName];
-                const button = document.createElement('button');
-                button.dataset.managerName = managerName;
-                button.className = 'login-btn w-full text-left p-4 rounded-lg border hover:bg-gray-50 transition-all shadow-sm';
-                button.innerHTML = `
-                    <h2 class="text-lg font-bold text-blue-800">${managerName}</h2>
-                    <!-- USA OS NOMES DOS SEGMENTOS -->
-                    <p class="text-sm text-gray-600">${config.segmentNames.join(', ')}</p>
-                `;
-                pdLoginButtons.appendChild(button);
-            });
-        }
-
-        // 2. Preenche a "colinha" de senhas (USA NOMES DOS SEGMENTOS)
-        function populatePasswordList() {
-            passwordListTbody.innerHTML = '';
-            Object.keys(PD_CONFIG).sort().forEach(managerName => {
-                 const config = PD_CONFIG[managerName];
-                 const row = document.createElement('tr');
-                 row.innerHTML = `
-                    <td class="px-6 py-4 whitespace-nowrap text-gray-800 font-medium">${managerName}</td>
-                    <!-- USA OS NOMES DOS SEGMENTOS -->
-                    <td class="px-6 py-4 whitespace-nowrap text-gray-600">${config.segmentNames.join(', ')}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-gray-600 password-cell">${config.password}</td>
-                 `;
-                 passwordListTbody.appendChild(row);
-            });
-        }
-
-        // 3. Abre o modal de senha (P&D)
-        function openPasswordModal(e) {
-            const managerName = e.currentTarget.dataset.managerName;
-            if (!managerName) return;
-
-            currentManagerToLogin = managerName;
-            passwordModalTitle.textContent = `Responsável: ${managerName}`;
-            passwordError.textContent = '';
-            passwordInput.value = '';
-            passwordModal.classList.remove('hidden');
-            passwordInput.focus();
-        }
-
-        // 4. Cancela o modal de senha (P&D)
-        function closePasswordModal() {
-            passwordModal.classList.add('hidden');
-            currentManagerToLogin = null;
-        }
-
-        // 5. Verifica a senha e faz o login (P&D)
-        function handlePdLogin() {
-            const password = passwordInput.value;
-            const managerName = currentManagerToLogin;
-            const userConfig = PD_CONFIG[managerName];
-
-            if (userConfig && userConfig.password === password) {
-                // SUCESSO
-                currentUser = {
-                    name: managerName,
-                    segments: userConfig.segments,
-                    segmentNames: userConfig.segmentNames, // Armazena os nomes também
-                    role: 'pd'
-                };
-
-                // Salva o nome do gerente P&D para pré-preencher modais
-                localStorage.setItem('pdManagerName', managerName);
-
-                closePasswordModal();
-                loginView.classList.add('opacity-0', 'pointer-events-none');
-                dashboardView.classList.remove('hidden');
-
-                // Configura o painel para o usuário
-                setupDashboardForUser();
-                // Inicia os listeners do Firebase
-                listenForActiveSession();
-            } else {
-                // FALHA
-                passwordError.textContent = 'Senha incorreta. Tente novamente.';
-            }
+            managerRepliesListenerUnsubscribe = onSnapshot(q, (snapshot) => {
+                 allManagerReplies = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                 renderNotificationBell();
+                 if (!dashboardContent.classList.contains('hidden')) {
+                     renderObservationsFeed(allCurrentSamples);
+                 }
+            }, (error) => handleFirestoreError(error, "ouvir respostas dos gestores"));
         }
         
-        // 6. Lógica do Modal de Admin (Colinha)
-        function openAdminPasswordModal() {
-            adminPasswordError.textContent = '';
-            adminPasswordInput.value = '';
-            adminPasswordModal.classList.remove('hidden');
-            adminPasswordInput.focus();
-        }
-        
-        function closeAdminPasswordModal() {
-            adminPasswordModal.classList.add('hidden');
-        }
-
-        function handleAdminLogin() {
-            const password = adminPasswordInput.value;
-            if (password === ADMIN_PASSWORD) {
-                closeAdminPasswordModal();
-                populatePasswordList(); // Preenche a tabela
-                passwordListModal.classList.remove('hidden'); // Mostra a colinha
-            } else {
-                adminPasswordError.textContent = 'Senha incorreta.';
-            }
-        }
-
-        // 7. Faz logout
-        function handleLogout() {
-            // Limpa estado
-            currentUser = null;
-            currentSessionId = null;
-            allSamples = [];
-            allManagerReplies = [];
-            allPdReplies = [];
-            allPdPostits = [];
-            allUnreadManagerReplies = [];
-            allPdDestaques = []; // LIMPA DESTAQUES
-
-            // Para todos os listeners
-            if (dataListenerUnsubscribe) dataListenerUnsubscribe();
-            if (managerRepliesListenerUnsubscribe) managerRepliesListenerUnsubscribe();
-            if (pdRepliesListenerUnsubscribe) pdRepliesListenerUnsubscribe();
-            if (pdPostitsListenerUnsubscribe) pdPostitsListenerUnsubscribe();
-            if (pdDestaquesListenerUnsubscribe) pdDestaquesListenerUnsubscribe(); // PARA LISTENER DE DESTAQUES
-
-            // Reseta a UI
-            dashboardView.classList.add('hidden');
-            dashboardContent.classList.add('hidden');
-            loadingMessage.textContent = 'Aguardando dados da sessão ativa...';
-            loadingMessage.classList.remove('hidden');
-            loginView.classList.remove('opacity-0', 'pointer-events-none');
-        }
-
-        // === CONFIGURAÇÃO DO PAINEL ===
-
-        function setupDashboardForUser() {
-            if (!currentUser) return;
-
-            // Define o nome do gerente P&D nos modais de resposta
-            pdNameInput.value = currentUser.name;
-            pdNamePostItInput.value = currentUser.name;
+        function listenForSellerReplies(sessionId) {
+            if (sellerRepliesListenerUnsubscribe) sellerRepliesListenerUnsubscribe();
+            const q = query(collection(db, "sessoes", sessionId, "respostasVendedor"));
             
-            dashboardTitle.textContent = `Painel P&D: ${currentUser.name}`;
-            
-            // Define a data final padrão como hoje
-            endDateFilter.value = new Date().toISOString().split('T')[0];
+            sellerRepliesListenerUnsubscribe = onSnapshot(q, (snapshot) => {
+                 allSellerReplies = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                 renderNotificationBell();
+                 if (!dashboardContent.classList.contains('hidden')) {
+                     renderObservationsFeed(allCurrentSamples);
+                 }
+            }, (error) => handleFirestoreError(error, "ouvir respostas dos vendedores"));
         }
 
-        // === LISTENERS DO FIREBASE ===
-
-        // 1. Ouve qual é a sessão ativa (ex: 'sessao_123456')
-        function listenForActiveSession() {
-            const activeSessionRef = doc(db, "configuracoes", "sessaoAtiva");
-
-            onSnapshot(activeSessionRef, (docSnap) => {
-                const activeSessionId = docSnap.exists() ? docSnap.data().current : null;
-
-                if (activeSessionId && activeSessionId !== currentSessionId) {
-                    currentSessionId = activeSessionId;
-                    sessionIdText.innerHTML = `Sessão Ativa: <strong>${currentSessionId}</strong>`;
-                    loadingMessage.classList.remove('hidden');
-                    dashboardContent.classList.add('hidden');
-
-                    // Inicia todos os outros listeners agora que temos a sessão
-                    startAllListeners(currentSessionId);
-                } else if (!activeSessionId) {
-                    sessionIdText.textContent = 'Nenhuma sessão ativa encontrada.';
-                    loadingMessage.classList.remove('hidden');
-                    dashboardContent.classList.add('hidden');
-                    currentSessionId = null;
-                }
-            });
-        }
-
-        // 2. Inicia todos os listeners de dados
-        function startAllListeners(sessionId) {
-            // Para listeners antigos se existirem
-            if (dataListenerUnsubscribe) dataListenerUnsubscribe();
-            if (managerRepliesListenerUnsubscribe) managerRepliesListenerUnsubscribe();
-            if (pdRepliesListenerUnsubscribe) pdRepliesListenerUnsubscribe();
-            if (pdPostitsListenerUnsubscribe) pdPostitsListenerUnsubscribe();
-            if (pdDestaquesListenerUnsubscribe) pdDestaquesListenerUnsubscribe(); // NOVO
-
-            // Listener para DADOS DAS AMOSTRAS
-            const dataQuery = collection(db, "sessoes", sessionId, "vendedores");
-            dataListenerUnsubscribe = onSnapshot(dataQuery, (dataSnapshot) => {
-                allSamples = dataSnapshot.docs.flatMap(doc => {
-                    const data = doc.data();
-                    const originalName = data.originalName || doc.id;
-
-                    return (data.amostras || []).map(sample => {
-                        // Determina a qual P&D esta amostra pertence
-                        const pdInfo = getPdSegmentFromProductCode(sample.produto);
-                        return {
-                            ...sample,
-                            sellerOriginalName: originalName,
-                            pdManagerName: pdInfo ? pdInfo.name : null // Adiciona o nome do P&D responsável
-                        };
-                    });
-                });
-
-                loadingMessage.classList.add('hidden');
-                dashboardContent.classList.remove('hidden');
-                renderDashboard(); // Renderiza o painel com os novos dados
-            });
-            
-            // Listener para respostas dos GESTORES (para o feed e notificações P&D)
-            const managerRepliesQuery = collection(db, "sessoes", sessionId, "notificacoesVendedor");
-            managerRepliesListenerUnsubscribe = onSnapshot(managerRepliesQuery, (snapshot) => {
-                allManagerReplies = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                
-                // Atualiza o cache de não lidas e renderiza o badge
-                updateUnreadManagerReplies();
-                renderNotificationBadge();
-                renderDashboard(); // Re-renderiza o feed
-            });
-
-            // Listener para respostas do P&D (para o feed)
-            const pdRepliesQuery = collection(db, "sessoes", sessionId, "respostasVendedor");
-            pdRepliesListenerUnsubscribe = onSnapshot(pdRepliesQuery, (snapshot) => {
-                allPdReplies = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                renderDashboard(); // Re-renderiza o feed
-            });
-            
-            // Listener para Post-its P&D (Notas internas)
-            listenForPdPostits(sessionId);
-
-            // NOVO: Listener para Destaques P&D
-            listenForPdDestaques(sessionId);
-        }
-
-        // 5. Listener para Post-its (Notas internas P&D)
+        // Listener de Post-it
         function listenForPdPostits(sessionId) {
             if (pdPostitsListenerUnsubscribe) pdPostitsListenerUnsubscribe();
-            if (!currentUser || currentUser.role !== 'pd') return; // Só gerentes P&D veem post-its
-
-            // Query para post-its do gerente P&D logado (sem ordenação)
-            const pdPostitsQuery = query(
+            
+            // CORREÇÃO: Query deve usar a variável sessionId, não currentSessionId
+            const q = query(
                 collection(db, "sessoes", sessionId, "pdPostits"),
-                where("pdManagerName", "==", currentUser.name)
+                orderBy("timestamp", "desc")
             );
 
-            pdPostitsListenerUnsubscribe = onSnapshot(pdPostitsQuery, (snapshot) => {
-                let postits = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-
-                // Ordenação manual feita no cliente (JavaScript)
-                postits.sort((a, b) => {
-                    const timeA = a.timestamp?.toDate ? a.timestamp.toDate().getTime() : 0;
-                    const timeB = b.timestamp?.toDate ? b.timestamp.toDate().getTime() : 0;
-                    return timeB - timeA; // Descendente (mais novo primeiro)
-                });
-
-                allPdPostits = postits;
-                console.log(`[P&D] Post-its carregados: ${allPdPostits.length}`);
-                renderPdPostits(); // Re-renderiza a lista de post-its
+            pdPostitsListenerUnsubscribe = onSnapshot(q, (snapshot) => {
+                 allPdPostits = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                 // Re-renderiza o feed
+                 if (!dashboardContent.classList.contains('hidden')) {
+                     renderPdPostits();
+                 }
             }, (error) => {
-                console.error("Erro ao carregar post-its P&D:", error);
-                allPdPostits = [];
-                renderPdPostits(); // Renderiza vazio em caso de erro
+                 handleFirestoreError(error, "ouvir post-its");
+                 allPdPostits = [];
+                 if (!dashboardContent.classList.contains('hidden')) {
+                     renderPdPostits();
+                 }
+            });
+        }
+
+        // Lógica de Destaque
+        function listenForDestaques(sessionId) {
+            if (destaquesListenerUnsubscribe) destaquesListenerUnsubscribe();
+            
+            const destaquesRef = doc(db, "sessoes", sessionId, "configuracoes", "destaquesAmostras");
+            
+            destaquesListenerUnsubscribe = onSnapshot(destaquesRef, (docSnap) => {
+                 highlightedSamplesCache = docSnap.exists() ? (docSnap.data().lista || []) : [];
+                 // Re-renderiza o feed
+                 if (!dashboardContent.classList.contains('hidden')) {
+                     renderObservationsFeed(allCurrentSamples);
+                 }
+                 // Re-renderiza o modal de amostras (se estiver aberto)
+                 if (!feedbackSamplesModal.classList.contains('hidden')) {
+                     // Esta função 'showFeedbackSamples' não existe neste painel, vamos usar a de pesquisa
+                     // const title = feedbackSamplesTitle.textContent;
+                     // openGlobalSearchModal(allCurrentSamples); // Re-mostra com o cache atualizado
+                 }
+                 
+            }, (error) => {
+                 handleFirestoreError(error, "ouvir destaques");
             });
         }
         
-        // 6. NOVO: Listener para Destaques
-        function listenForPdDestaques(sessionId) {
-            if (pdDestaquesListenerUnsubscribe) pdDestaquesListenerUnsubscribe();
-            if (!currentUser || !currentSessionId) return;
-
-            // O caminho é por sessão e por usuário de P&D
-            const destaquesRef = doc(db, "sessoes", sessionId, "pdDestaques", currentUser.name);
-
-            pdDestaquesListenerUnsubscribe = onSnapshot(destaquesRef, (docSnap) => {
-                allPdDestaques = docSnap.exists() ? (docSnap.data().lista || []) : [];
-                console.log(`[P&D] Destaques carregados: ${allPdDestaques.length}`);
-                // Re-renderiza o feed e o modal (se aberto)
-                renderDashboard();
-                if (!feedbackSamplesModal.classList.contains('hidden')) {
-                    const currentFeedback = feedbackSamplesTitle.textContent.match(/"(.*?)"/);
-                    if (currentFeedback && currentFeedback[1]) {
-                        showFeedbackSamples(currentFeedback[1]);
-                    }
+        async function getActiveSessionId() {
+            try {
+                const activeSessionRef = doc(db, "configuracoes", "sessaoAtiva");
+                const docSnap = await getDoc(activeSessionRef);
+                if (docSnap.exists() && docSnap.data().current) {
+                    return docSnap.data().current;
+                } else {
+                    return null;
                 }
-            }, (error) => {
-                console.error("Erro ao carregar destaques P&D:", error);
-                allPdDestaques = [];
+            } catch (error) {
+                handleFirestoreError(error, "buscar sessão ativa");
+                return null;
+            }
+        }
+
+        async function loadSellerSegments() {
+            sellerSegmentsCache = {};
+            try {
+                const segmentsSnap = await getDocs(collection(db, "vendedorConfig"));
+                segmentsSnap.forEach(doc => {
+                    sellerSegmentsCache[doc.id] = doc.data().segmento;
+                });
+                console.log("Cache de segmentos carregado:", sellerSegmentsCache);
+                
+                // Popular o filtro de segmento do feed
+                populateSegmentFilter();
+                
+            } catch (error) {
+                handleFirestoreError(error, "carregar segmentos de vendedores");
+            }
+        }
+
+        async function loadAllData(sessionId) {
+            dashboard.classList.remove('hidden');
+            loadingState.classList.remove('hidden');
+            dashboardContent.classList.add('hidden');
+            loginView.classList.add('hidden');
+            
+            dataListenersUnsubscribe.forEach(unsub => unsub());
+            dataListenersUnsubscribe = [];
+            
+            currentSessionId = sessionId;
+            allCurrentSamples = [];
+
+            // 1. Carrega os segmentos primeiro
+            await loadSellerSegments();
+
+            // 2. Ouve todas as threads de comunicação e notas
+            listenForManagerReplies(sessionId);
+            listenForSellerReplies(sessionId);
+            listenForPdPostits(sessionId); // <-- CHAMADA CORRIGIDA
+            listenForDestaques(sessionId);
+
+            // 3. Busca todos os vendedores da sessão
+            const sellersQuery = query(collection(db, "sessoes", sessionId, "vendedores"));
+            const sellersSnapshot = await getDocs(sellersQuery);
+            const sellerDocs = sellersSnapshot.docs;
+            
+            if (sellerDocs.length === 0) {
+                 console.log("Nenhum vendedor encontrado para esta sessão.");
+                 loadingState.classList.add('hidden');
+                 dashboardContent.classList.remove('hidden');
+                 processAndDisplayDashboard([]);
+                 return;
+            }
+
+            // 4. Usa o DataLoadManager para carregar as sub-coleções
+            const loadManager = new DataLoadManager(sellerDocs.length, (allSamples) => {
+                allCurrentSamples = allSamples;
+                processAndDisplayDashboard(allCurrentSamples);
+                loadingState.classList.add('hidden');
+                dashboardContent.classList.remove('hidden');
+            });
+            
+            loadingMessage.textContent = `A preparar para carregar ${sellerDocs.length} vendedores...`;
+
+            // 5. Ouve as 'amostras' de cada vendedor
+            sellerDocs.forEach(sellerDoc => {
+                const sellerData = sellerDoc.data();
+                const samplesQuery = query(
+                    collection(db, sellerDoc.ref.path, "amostras")
+                );
+
+                const unsub = onSnapshot(samplesQuery, (samplesSnapshot) => {
+                    const samples = samplesSnapshot.docs.map(sampleDoc => ({
+                        ...sampleDoc.data(),
+                        id: sampleDoc.id,
+                        sellerDocRef: sellerDoc.ref.path // Guarda a referência do vendedor
+                    }));
+                    loadManager.sellerLoaded(sellerData.originalName, samples);
+                }, (error) => {
+                    handleFirestoreError(error, `ouvir amostras de ${sellerData.originalName}`);
+                    loadManager.sellerLoaded(sellerData.originalName, []);
+                });
+                dataListenersUnsubscribe.push(unsub);
             });
         }
 
+        // --- Lógica de Login ---
+        
+        // NOVO: `populatePdButtons` com cards profissionais
+        function populatePdButtons() {
+            pdLoginButtons.innerHTML = '';
+            // Ícone genérico para P&D
+            const iconSvg = `
+                <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="m15.75 15.75-2.489-2.489m0 0a3.375 3.375 0 1 0-4.773-4.773 3.375 3.375 0 0 0 4.774 4.774ZM21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                </svg>
+            `;
 
-        // === LÓGICA DE NOTIFICAÇÃO (Respostas dos Gestores) ===
+            Object.entries(PD_PASSWORDS).forEach(([segment, data]) => {
+                const card = document.createElement('button');
+                card.className = "login-card";
+                card.dataset.segment = segment;
+                
+                card.innerHTML = `
+                    <div class="login-card-details">
+                        <span class="login-card-icon">${iconSvg}</span>
+                        <div>
+                            <p>${segment}</p>
+                            <span class="login-card-name">${data.name}</span>
+                        </div>
+                    </div>
+                    <svg class="w-5 h-5 opacity-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16Zm3.857-9.809a.75.75 0 0 0-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 1 0-1.06 1.061l2.5 2.5a.75.75 0 0 0 1.137-.089l4-5.5Z" clip-rule="evenodd" />
+                    </svg>
+                `;
+                
+                card.addEventListener('click', () => {
+                    pdLoginButtons.querySelectorAll('.login-card').forEach(c => {
+                        c.classList.remove('selected');
+                        c.querySelector('svg:last-child').classList.add('opacity-0');
+                    });
+                    card.classList.add('selected');
+                    card.querySelector('svg:last-child').classList.remove('opacity-0');
+                    currentSegment = segment;
+                    currentPdName = data.name; // Guarda o nome do responsável
+                });
+                pdLoginButtons.appendChild(card);
+            });
+        }
 
-        // Atualiza o cache de respostas não lidas dos gestores
-        function updateUnreadManagerReplies() {
-            if (!currentUser) {
-                allUnreadManagerReplies = [];
+        async function login() {
+            const password = pdPasswordInput.value;
+            if (!currentSegment) {
+                loginError.textContent = 'Por favor, selecione a sua área.';
                 return;
             }
             
-            // Filtra respostas de gestores para amostras que pertencem a este P&D
-            allUnreadManagerReplies = allManagerReplies.filter(reply => {
-                // 1. A resposta não foi lida pelo P&D
-                // 2. A resposta é sobre um produto que este P&D gerencia
-                const pdInfo = getPdSegmentFromProductCode(reply.produto);
-                return !reply.readByPd && pdInfo && pdInfo.name === currentUser.name;
+            if (PD_PASSWORDS[currentSegment].pass === password) {
+                loginError.textContent = '';
+                pdLoginBtn.disabled = true;
+                pdLoginBtn.textContent = 'A carregar...';
+
+                // Salva o segmento/nome no localStorage para reconexão (opcional)
+                localStorage.setItem('pdSegment', currentSegment); 
+                
+                const sessionId = await getActiveSessionId();
+                if (!sessionId) {
+                    loginError.textContent = 'Nenhuma sessão ativa encontrada. Contate o administrador.';
+                    pdLoginBtn.disabled = false;
+                    pdLoginBtn.textContent = 'Entrar';
+                    return;
+                }
+                
+                dashboardTitle.textContent = `Painel P&D: ${currentSegment}`;
+                if (currentSegment === 'ADMIN') {
+                    adminAccessSection.classList.remove('hidden');
+                    renderAccessTable();
+                }
+                
+                await loadAllData(sessionId);
+
+            } else {
+                loginError.textContent = 'Senha incorreta.';
+            }
+        }
+        
+        function logout() {
+            localStorage.removeItem('pdSegment');
+            currentSessionId = null;
+            currentSegment = null;
+            currentPdName = null;
+            allCurrentSamples = [];
+            allManagerReplies = [];
+            allSellerReplies = [];
+            allPdPostits = [];
+            highlightedSamplesCache = [];
+            dataListenersUnsubscribe.forEach(unsub => unsub());
+            dataListenersUnsubscribe = [];
+            if(managerRepliesListenerUnsubscribe) managerRepliesListenerUnsubscribe();
+            if(sellerRepliesListenerUnsubscribe) sellerRepliesListenerUnsubscribe();
+            if(pdPostitsListenerUnsubscribe) pdPostitsListenerUnsubscribe();
+            if(destaquesListenerUnsubscribe) destaquesListenerUnsubscribe();
+            
+            dashboard.classList.add('hidden');
+            loginView.classList.remove('hidden');
+            pdPasswordInput.value = '';
+            pdLoginBtn.disabled = false;
+            pdLoginBtn.textContent = 'Entrar';
+            adminAccessSection.classList.add('hidden');
+            pdLoginButtons.querySelectorAll('.login-card').forEach(c => {
+                 c.classList.remove('selected');
+                 c.querySelector('svg:last-child').classList.add('opacity-0');
+            });
+            
+            // Remove o sino
+            document.getElementById('notification-btn')?.parentElement.remove();
+        }
+
+        // --- Processamento e Renderização do Dashboard ---
+        function processAndDisplayDashboard(samples) {
+            if (!samples) return;
+            renderCharts(samples);
+            renderObservationsFeed(samples);
+            renderPdPostits(); // Renderiza os post-its
+        }
+        
+        function populateSegmentFilter() {
+            const segments = new Set(Object.values(sellerSegmentsCache).filter(Boolean));
+            observationSegmentFilter.innerHTML = '<option value="">Todos os Segmentos</option>';
+            Array.from(segments).sort().forEach(segment => {
+                const option = document.createElement('option');
+                option.value = segment;
+                option.textContent = segment;
+                observationSegmentFilter.appendChild(option);
             });
         }
 
-        function renderNotificationBadge() {
-            if (allUnreadManagerReplies.length > 0) {
-                notificationBadge.textContent = allUnreadManagerReplies.length;
-                notificationBadge.classList.remove('hidden');
-            } else {
-                notificationBadge.classList.add('hidden');
-            }
-        }
+        function renderCharts(samples) {
+            let pending = 0, resolved = 0, approved = 0, rejected = 0, events = 0;
+            const APPROVED_PREFIX = 'A -';
+            const REJECTED_PREFIX = 'R -';
+            const EVENTS_PREFIX = 'E -';
 
-        function openNotificationModal() {
-            // Ordena por data
-            allUnreadManagerReplies.sort((a, b) => (b.timestamp?.toDate() ?? 0) - (a.timestamp?.toDate() ?? 0));
-
-            if (allUnreadManagerReplies.length === 0) {
-                notificationList.innerHTML = '<p class="text-gray-500">Nenhuma resposta nova.</p>';
-            } else {
-                notificationList.innerHTML = allUnreadManagerReplies.map(reply => {
-                    const time = reply.timestamp?.toDate() ? reply.timestamp.toDate().toLocaleString('pt-BR') : '';
-                    return `
-                        <div class="p-3 rounded-lg border bg-blue-50">
-                            <p class="text-sm">
-                                <strong>${reply.managerName}</strong> (Gestor) respondeu a <strong>${reply.sellerName}</strong> sobre <strong>${reply.produto}</strong>:
-                            </p>
-                            <p class="text-gray-700 italic my-2 manager-reply">"${reply.replyMessage}"</p>
-                            <div class="flex justify-between items-center text-xs">
-                                <span class="text-gray-400">${time}</span>
-                                <button class="mark-as-read-btn text-blue-600 hover:text-blue-800 font-medium" data-reply-id="${reply.id}">
-                                    ✓ Marcar como lida
-                                </button>
-                            </div>
-                        </div>
-                    `;
-                }).join('');
-            }
-
-            notificationModal.classList.remove('hidden');
-        }
-
-        async function markReplyAsRead(e) {
-            const replyId = e.target.dataset.replyId;
-            if (!replyId || !currentSessionId) return;
-
-            e.target.disabled = true;
-            e.target.textContent = 'Marcando...';
-
-            const replyRef = doc(db, "sessoes", currentSessionId, "notificacoesVendedor", replyId);
-            try {
-                // Usamos um campo 'readByPd' para não conflitar com o 'read' do vendedor
-                await updateDoc(replyRef, { readByPd: true });
-                // O listener (managerRepliesListenerUnsubscribe) vai atualizar a UI
-            } catch (error) {
-                console.error("Erro ao marcar como lida:", error);
-                e.target.disabled = false;
-                e.target.textContent = '✓ Marcar como lida';
-            }
-        }
-
-        // === RENDERIZAÇÃO DO DASHBOARD ===
-
-        // Função principal de renderização
-        function renderDashboard() {
-            if (!currentUser) return;
-
-            // 1. Filtra as amostras que pertencem aos segmentos deste P&D
-            let pdSamples = allSamples.filter(sample => {
-                return sample.pdManagerName === currentUser.name;
+            samples.forEach(s => {
+                if (s.isPending) {
+                    pending++;
+                } else {
+                    resolved++;
+                    const feedback = s.feedback || '';
+                    if (feedback.startsWith(APPROVED_PREFIX)) approved++;
+                    else if (feedback.startsWith(REJECTED_PREFIX)) rejected++;
+                    else if (feedback.startsWith(EVENTS_PREFIX)) events++;
+                }
             });
 
-            // 2. Filtra por Data
-            const startDate = startDateFilter.valueAsDate;
-            const endDate = endDateFilter.valueAsDate;
+            renderChart('segment-status-chart', 'doughnut', {
+                labels: ['Pendentes', 'Resolvidos'],
+                datasets: [{ data: [pending, resolved], backgroundColor: ['#facc15', '#3b82f6'] }]
+            });
 
-            if (startDate || endDate) {
-                pdSamples = pdSamples.filter(sample => {
-                    // Tenta encontrar uma data válida para a amostra (lastUpdate ou Emissão NF)
-                    let sampleDate = sample.lastUpdate?.toDate ? sample.lastUpdate.toDate() : null;
-                    if (!sampleDate && sample.emissaoNF) {
-                        const parts = sample.emissaoNF.split('/');
-                        if (parts.length === 3) {
-                             // Formato DD/MM/YYYY
-                            sampleDate = new Date(`${parts[2]}-${parts[1]}-${parts[0]}T12:00:00Z`); // Adiciona T12:00:00Z para evitar problemas de fuso horário
-                        }
-                    }
-                    
-                    if (!sampleDate) return false; // Ignora se não tiver data
-
-                    // Ajusta datas para início e fim do dia em UTC
-                    const start = startDate ? new Date(Date.UTC(startDate.getUTCFullYear(), startDate.getUTCMonth(), startDate.getUTCDate(), 0, 0, 0)) : null;
-                    const end = endDate ? new Date(Date.UTC(endDate.getUTCFullYear(), endDate.getUTCMonth(), endDate.getUTCDate(), 23, 59, 59)) : null;
-
-                    if (start && sampleDate < start) return false;
-                    if (end && sampleDate > end) return false;
-                    return true;
+            if (approved === 0 && rejected === 0 && events === 0) {
+                 renderChart('rejection-rate-chart', 'doughnut', { labels: ['Aguardando Respostas'], datasets: [{ data: [1], backgroundColor: ['#e5e7eb'] }] });
+            } else {
+                renderChart('rejection-rate-chart', 'doughnut', {
+                    labels: ['Aprovadas', 'Reprovadas', 'Eventos'],
+                    datasets: [{
+                        data: [approved, rejected, events],
+                        backgroundColor: ['#34d399', '#f87171', '#a78bfa']
+                    }]
                 });
             }
+        }
 
-            // 3. Popula o filtro de feedback (com base nas amostras filtradas)
-            populateFeedbackFilter(pdSamples);
-
-            // 4. Renderiza os componentes com os dados filtrados
-            renderKPIs(pdSamples);
-            renderCharts(pdSamples);
-            renderObservationsFeed(pdSamples); // Feed usa dados filtrados
+        function renderChart(canvasId, type, data, options = {}) {
+            const ctx = document.getElementById(canvasId)?.getContext('2d');
+            if (!ctx) return;
+            if (chartInstances[canvasId]) chartInstances[canvasId].destroy();
             
-            // 5. Renderiza o badge de notificação
-            renderNotificationBadge();
-        }
-
-        // Renderiza os KPIs
-        function renderKPIs(samples) {
-            const pendingSamples = samples.filter(s => s.isPending).length;
-            const feedbacksReceived = samples.filter(s => s.feedback && s.feedback.trim() !== '').length;
-
-            kpiTotalSamples.textContent = samples.length;
-            kpiPendingSamples.textContent = pendingSamples;
-            kpiFeedbacksCount.textContent = feedbacksReceived;
-        }
-
-        // Renderiza os Gráficos
-        function renderCharts(samples) {
-            let approved = 0, rejected = 0, events = 0, pendingFeedback = 0;
-            const feedbackCounts = {}; // Contagem para o gráfico de tipos
-
-            samples.filter(s => !s.isPending && s.feedback).forEach(s => {
-                const feedbackKey = s.feedback.trim();
-                const normalizedFeedback = getCanonicalFeedback(feedbackKey);
-
-                feedbackCounts[normalizedFeedback] = (feedbackCounts[normalizedFeedback] || 0) + 1;
-
-                if (CANONICAL_APPROVED.includes(normalizedFeedback)) approved++;
-                else if (CANONICAL_REJECTED.includes(normalizedFeedback)) rejected++;
-                else if (CANONICAL_EVENTS.includes(normalizedFeedback)) events++;
-                else if (CANONICAL_PENDING.includes(normalizedFeedback)) pendingFeedback++;
-            });
-
-            // Gráfico de Reprovação (Pizza)
-            const totalAnswered = approved + rejected + events + pendingFeedback;
-            renderChart('rejection-chart', 'doughnut', {
-                labels: ['Aprovadas', 'Reprovadas', 'Eventos', 'Pendência'],
-                datasets: [{
-                    data: [approved, rejected, events, pendingFeedback],
-                    backgroundColor: ['#34d399', '#f87171', '#a78bfa', '#f59e0b'],
-                    borderColor: '#ffffff',
-                    borderWidth: 2
-                }]
-            }, {
-                plugins: {
-                    datalabels: {
-                        display: true,
-                        color: '#fff',
-                        font: { weight: 'bold' },
-                        formatter: (value, ctx) => {
-                            let sum = 0;
-                            let dataArr = ctx.chart.data.datasets[0].data;
-                            dataArr.map(data => { sum += data; });
-                            let percentage = (sum > 0 ? (value*100 / sum) : 0).toFixed(0) + "%";
-                            return value > 0 ? percentage : '';
-                        }
-                    }
-                }
-            });
-
-            // Gráfico de Tipos (Barras Horizontais)
-            const sortedFeedbacks = Object.entries(feedbackCounts).sort(([,a],[,b]) => b-a).slice(0, 10); // Top 10
-            renderChart('feedback-type-chart', 'bar', {
-                labels: sortedFeedbacks.map(([label]) => label || "Sem Categoria"),
-                datasets: [{
-                    label: 'Quantidade',
-                    data: sortedFeedbacks.map(([, count]) => count),
-                    backgroundColor: '#3b82f6'
-                }]
-            }, {
-                indexAxis: 'y', // Barras horizontais
-                scales: { x: { beginAtZero: true } },
-                plugins: {
-                    legend: { display: false },
-                    datalabels: {
-                         display: true,
-                         color: '#fff',
-                         anchor: 'end',
-                         align: 'start',
-                         offset: -30,
-                         font: { weight: 'bold' },
-                         formatter: (value) => value > 0 ? value : ''
-                    }
-                }
-            },
-            (label, value) => {
-                // Handler para clique no gráfico de tipos
-                showFeedbackSamples(label);
-            });
-        }
-
-        // Função genérica para renderizar/atualizar gráficos
-        function renderChart(canvasId, type, data, options = {}, onClickHandler = null) {
-            const canvas = document.getElementById(canvasId);
-            if (!canvas) return;
-            const ctx = canvas.getContext('2d');
-            if (chartInstances[canvasId]) {
-                chartInstances[canvasId].destroy();
-            }
             Chart.register(ChartDataLabels);
-            chartInstances[canvasId] = new Chart(ctx, {
-                type,
-                data,
+            chartInstances[canvasId] = new Chart(ctx, { 
+                type, 
+                data, 
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
-                    ...options,
-                    // Adiciona onClick genérico se um handler for passado
-                    onClick: (evt) => {
-                        if (!onClickHandler) return;
-                        const points = chartInstances[canvasId].getElementsAtEventForMode(evt, 'nearest', { intersect: true }, true);
-                        if (points.length) {
-                            const firstPoint = points[0];
-                            const label = chartInstances[canvasId].data.labels[firstPoint.index];
-                            const value = chartInstances[canvasId].data.datasets[firstPoint.datasetIndex].data[firstPoint.index];
-                            onClickHandler(label, value);
-                        }
-                    }
+                    plugins: {
+                        legend: { display: type === 'doughnut' },
+                        datalabels: { display: false },
+                        ...options.plugins
+                    },
+                    ...options
                 }
-            });
-        }
-
-        // Renderiza o Feed de Observações
-        function renderObservationsFeed(samples) {
-            const feedbackFilter = observationFeedbackFilter.value;
-            const sellerSearchTerm = normalizeText(sellerSearchInput.value); 
-
-            let samplesWithObservations = samples
-                .filter(s => s.observation && s.observation.trim() !== '');
-
-            // Aplica filtro de feedback
-            if (feedbackFilter !== 'TODOS') {
-                samplesWithObservations = samplesWithObservations.filter(sample => {
-                    return getCanonicalFeedback(sample.feedback) === feedbackFilter;
-                });
-            }
-            
-            // Aplica filtro de pesquisa por vendedor
-            if (sellerSearchTerm) {
-                samplesWithObservations = samplesWithObservations.filter(sample => {
-                    return normalizeText(sample.sellerOriginalName).includes(sellerSearchTerm);
-                });
-            }
-
-            // Ordena por DESTAQUE e depois por data
-            samplesWithObservations.sort((a, b) => {
-                const isAHighlighted = allPdDestaques.includes(a.id);
-                const isBHighlighted = allPdDestaques.includes(b.id);
-                if (isAHighlighted && !isBHighlighted) return -1;
-                if (!isAHighlighted && isBHighlighted) return 1;
-
-                const timeA = a.lastUpdate?.toDate ? a.lastUpdate.toDate().getTime() : 0;
-                const timeB = b.lastUpdate?.toDate ? b.lastUpdate.toDate().getTime() : 0;
-                return timeB - timeA;
-            });
-
-            if (samplesWithObservations.length === 0) {
-                observationsFeedList.innerHTML = '<p class="text-gray-500">Nenhuma observação encontrada.</p>';
-                return;
-            }
-
-            observationsFeedList.innerHTML = '';
-            samplesWithObservations.forEach(sample => {
-                const isHighlighted = allPdDestaques.includes(sample.id);
-                
-                const card = document.createElement('div');
-                card.className = `p-4 rounded-lg border bg-white shadow-sm ${isHighlighted ? 'highlighted-card' : ''}`;
-
-                // --- Encontra todas as respostas (Gestor, P&D) e notas (Post-it) ---
-                const managerReply = allManagerReplies
-                    .filter(r => r.sellerName === sample.sellerOriginalName && r.pedido === sample.pedido && r.produto === sample.produto && r.originalObservation === sample.observation)
-                    .sort((a, b) => (b.timestamp?.toDate() ?? 0) - (a.timestamp?.toDate() ?? 0))[0];
-
-                const pdReply = allPdReplies
-                    .filter(r => r.pedido === sample.pedido && r.produto === sample.produto && r.originalManagerName === "P&D")
-                    .sort((a, b) => (b.timestamp?.toDate() ?? 0) - (a.timestamp?.toDate() ?? 0))[0];
-
-                const pdNote = allPdPostits
-                    .filter(n => n.sampleId === sample.id)
-                    .sort((a, b) => (b.timestamp?.toDate() ?? 0) - (a.timestamp?.toDate() ?? 0))[0];
-
-                
-                let repliesHtml = '';
-                if (pdNote) {
-                     const noteTime = pdNote.timestamp?.toDate() ? pdNote.timestamp.toDate().toLocaleString('pt-BR') : '';
-                     repliesHtml += `
-                        <div class="pd-note">
-                            <p><strong>Post-it (${pdNote.pdManagerName}):</strong> ${pdNote.message}</p>
-                            <p class="text-xs text-gray-400 text-right">${noteTime}</p>
-                        </div>`;
-                }
-                if (managerReply) {
-                     const managerTime = managerReply.timestamp?.toDate() ? managerReply.timestamp.toDate().toLocaleString('pt-BR') : '';
-                     repliesHtml += `
-                        <div class="manager-reply">
-                            <p><strong>${managerReply.managerName} (Gestor) respondeu:</strong> ${managerReply.replyMessage}</p>
-                            <p class="text-xs text-gray-400 text-right">${managerTime}</p>
-                        </div>`;
-                }
-                if (pdReply) {
-                     const pdTime = pdReply.timestamp?.toDate() ? pdReply.timestamp.toDate().toLocaleString('pt-BR') : '';
-                      repliesHtml += `
-                        <div class="seller-reply"> <!-- Usando a classe 'seller-reply' para o P&D -->
-                            <p><strong>${pdReply.sellerName} (P&D) respondeu:</strong> ${pdReply.replyMessage}</p>
-                            <p class="text-xs text-gray-400 text-right">${pdTime}</p>
-                        </div>`;
-                }
-
-                // HTML para o botão de estrela
-                const starIcon = isHighlighted 
-                    ? `<svg class="w-5 h-5 text-amber-500" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588 1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>`
-                    : `<svg class="w-5 h-5 text-gray-400 hover:text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.524 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.524 4.674c.3.921-.755 1.688-1.54 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.784.57-1.838-.197-1.539-1.118l1.524-4.674a1 1 0 00-.363-1.118L2.98 10.1c-.783-.57-.38-1.81.588 1.81h4.914a1 1 0 00.951-.69l1.524-4.674z"></path></svg>`;
-                const highlightButtonHtml = `
-                    <button class="highlight-btn p-1 rounded-full hover:bg-gray-100" data-sample-id="${sample.id}" title="Destacar">
-                        ${starIcon}
-                    </button>
-                `;
-
-                const observationTime = sample.lastUpdate?.toDate() ? sample.lastUpdate.toDate().toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }) : '';
-                
-                // ATUALIZADO: Adicionada data de Faturamento (Emissão NF)
-                const faturamentoDate = sample.emissaoNF ? ` | Fat.: ${sample.emissaoNF}` : '';
-
-                card.innerHTML = `
-                    <div class="mb-2">
-                        <div class="flex justify-between items-start">
-                            <p class="font-bold text-gray-800">${sample.produto || ''} <span class="font-normal text-gray-600">(${getCanonicalFeedback(sample.feedback) || 'N/A'})</span></p>
-                            ${highlightButtonHtml}
-                        </div>
-                        <p class="text-xs text-gray-500">${sample.descricao || 'Sem descrição'}</p>
-                        <p class="text-sm text-gray-500 mt-1">
-                            <strong class="text-blue-700">${sample.sellerOriginalName}</strong> (Pedido: ${sample.pedido}${faturamentoDate})
-                        </p>
-                    </div>
-                    <p class="text-gray-700 italic mb-3">"${sample.observation}"</p>
-                    ${repliesHtml}
-                    <div class="flex justify-between items-center text-xs text-gray-500 mt-3">
-                        <span>${observationTime}</span>
-                        <div class="flex space-x-2">
-                            <button class="post-it-feed-btn bg-purple-100 text-purple-700 hover:bg-purple-200 px-3 py-1 rounded-md text-xs font-semibold" data-sample-id="${sample.id}">
-                                ${pdNote ? 'Editar Post-it' : 'Deixar Post-it'}
-                            </button>
-                            <button class="reply-gestor-feed-btn bg-blue-100 text-blue-700 hover:bg-blue-200 px-3 py-1 rounded-md text-xs font-semibold" data-sample-id="${sample.id}">
-                                ${pdReply ? 'Ver/Responder' : 'Responder Gestor'}
-                            </button>
-                        </div>
-                    </div>
-                `;
-                observationsFeedList.appendChild(card);
-            });
-            
-            // Adiciona listener para os botões de destaque
-            observationsFeedList.querySelectorAll('.highlight-btn').forEach(btn => {
-                btn.addEventListener('click', toggleDestaque);
             });
         }
         
-        // Renderiza a lista de Post-its (Coluna da direita)
-        function renderPdPostits() {
-            if (allPdPostits.length === 0) {
-                 postItList.innerHTML = '<p class="text-gray-500 text-sm">Nenhum post-it encontrado.</p>';
+        // Feed de Observações
+        function renderObservationsFeed(samples) {
+            const segmentFilter = observationSegmentFilter.value;
+            const globalSearch = normalizeText(globalSearchInput.value);
+            
+            const filteredSamples = samples.filter(s => {
+                if (!s.observation) return false;
+                
+                // Filtro de Segmento
+                if (segmentFilter) {
+                     const sellerSegment = sellerSegmentsCache[normalizeText(s.sellerName)];
+                     if(sellerSegment !== segmentFilter) return false;
+                }
+                
+                // Filtro de Pesquisa Global (se houver)
+                if (globalSearch) {
+                    return (
+                        normalizeText(s.sellerName).includes(globalSearch) ||
+                        normalizeText(s.produto).includes(globalSearch) ||
+                        normalizeText(s.descricao).includes(globalSearch) ||
+                        normalizeText(s.razaoSocial).includes(globalSearch) ||
+                        normalizeText(s.observation).includes(globalSearch) ||
+                        normalizeText(s.pedido).includes(globalSearch)
+                    );
+                }
+                
+                return true; // Passou em tudo
+                
+            }).sort((a, b) => (b.lastUpdate?.toDate ? b.lastUpdate.toDate().getTime() : 0) - (a.lastUpdate?.toDate ? a.lastUpdate.toDate().getTime() : 0));
+            
+            observationsFeedList.innerHTML = '';
+            if (filteredSamples.length === 0) {
+                 const msg = globalSearch ? 'Nenhum resultado para a pesquisa.' : 'Nenhuma observação encontrada.';
+                 observationsFeedList.innerHTML = `<p class="text-gray-500 placeholder-observation">${msg}</p>`;
                  return;
             }
             
-            postItList.innerHTML = allPdPostits.map(note => {
-                const time = note.timestamp?.toDate() ? note.timestamp.toDate().toLocaleString('pt-BR') : '...';
-                
-                // Tenta encontrar a amostra associada para dar contexto
-                const sample = allSamples.find(s => s.id === note.sampleId);
-                const context = sample ? `Ref: ${sample.produto} (${sample.sellerOriginalName})` : (note.context || '');
+            filteredSamples.forEach(sample => {
+                 const card = document.createElement('div');
+                 const isHighlighted = highlightedSamplesCache.includes(sample.id);
+                 card.className = `p-4 rounded-lg border ${isHighlighted ? 'bg-amber-50 border-amber-200' : 'bg-white'}`;
+                 const time = sample.lastUpdate?.toDate() ? sample.lastUpdate.toDate().toLocaleString('pt-BR') : 'data inválida';
+                 
+                 // --- Lógica da Thread de Comunicação ---
+                 let repliesHtml = '';
+                 
+                 // 1. Nota P&D (se houver)
+                 const pdNote = allPdPostits.find(p => p.contextId === sample.id);
+                 if (pdNote) {
+                      repliesHtml += `
+                         <div class="pd-note">
+                             <p><strong>Nota P&D (${pdNote.pdManagerName}):</strong> ${pdNote.message}</p>
+                         </div>
+                     `;
+                 }
+                 
+                 // 2. Resposta do Gestor
+                 const managerReply = allManagerReplies
+                    .filter(r => r.sellerName === sample.sellerName && r.pedido === sample.pedido && r.produto === sample.produto && r.originalObservation === sample.observation)
+                    .sort((a, b) => (b.timestamp?.toDate() ?? 0) - (a.timestamp?.toDate() ?? 0))[0];
+                 
+                 if (managerReply) {
+                     repliesHtml += `
+                         <div class="manager-reply">
+                             <p><strong>${managerReply.managerName} (Gerente) respondeu:</strong> ${managerReply.replyMessage}</p>
+                         </div>
+                     `;
+                     
+                     // 3. Resposta do Vendedor (a essa resposta)
+                     const sellerReply = allSellerReplies
+                        .filter(r => r.originalManagerMessage === managerReply.replyMessage && r.pedido === sample.pedido && r.produto === sample.produto)
+                        .sort((a, b) => (b.timestamp?.toDate() ?? 0) - (a.timestamp?.toDate() ?? 0))[0];
+                     
+                     if (sellerReply) {
+                         repliesHtml += `
+                             <div class="seller-reply">
+                                 <p><strong>${sellerReply.sellerName} (Vendedor) respondeu:</strong> ${sellerReply.replyMessage}</p>
+                             </div>
+                         `;
+                     }
+                 }
+                 // --- Fim da Lógica da Thread ---
+                 
+                 // Ícone de Destaque (Estrela)
+                 const starIcon = isHighlighted ?
+                     `<svg class="w-5 h-5 text-amber-500" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588 1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>` :
+                     `<svg class="w-5 h-5 text-gray-400 hover:text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.524 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.524 4.674c.3.921-.755 1.688-1.54 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.784.57-1.838-.197-1.539-1.118l1.524-4.674a1 1 0 00-.363-1.118L2.98 10.1c-.783-.57-.38-1.81.588 1.81h4.914a1 1 0 00.951-.69l1.524-4.674z"></path></svg>`;
 
-                return `
-                    <div class="post-it-card p-3 rounded-lg border bg-yellow-50 border-yellow-200">
-                        <p class="text-sm text-gray-800">${note.message}</p>
-                        <div class="flex justify-between items-center mt-2">
-                            <span class="text-xs text-yellow-700 font-medium">${context}</span>
-                            <div class="flex items-center space-x-2">
-                                <span class="text-xs text-gray-400">${time}</span>
-                                <button class="delete-post-it-btn text-red-400 hover:text-red-600" data-note-id="${note.id}" title="Apagar post-it">
-                                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg>
-                                </button>
-                            </div>
+                 card.innerHTML = `
+                    <div class="flex justify-between items-start">
+                        <div class="mb-2">
+                            <p class="font-bold text-gray-800">${sample.produto}</p>
+                            <!-- NOVO: Descrição adicionada -->
+                            <p class="text-sm text-gray-600">${sample.descricao || 'Sem descrição'}</p>
+                            <p class="text-xs text-gray-500">${sample.razaoSocial || 'Cliente N/A'}</p>
+                        </div>
+                        <button class="highlight-sample-btn p-1 rounded-full hover:bg-gray-100" data-sample-id="${sample.id}" title="Destacar Amostra">
+                            ${starIcon}
+                        </button>
+                    </div>
+                    <p class="text-gray-700 mb-3 italic">"${sample.observation}"</p>
+                    
+                    ${repliesHtml}
+
+                    <div class="flex justify-between items-end text-xs text-gray-500 mt-3 pt-3 border-t">
+                         <div>
+                             <p>- ${sample.sellerName} (Pedido: ${sample.pedido})</p>
+                             <!-- NOVO: Data Faturamento adicionada -->
+                             <p class="text-gray-400">Fat.: ${sample.emissaoNF || 'N/A'} | Obs.: ${time}</p>
+                         </div>
+                         <div class="flex gap-2">
+                             <button class="add-postit-modal-btn bg-amber-100 text-amber-800 hover:bg-amber-200 px-2 py-1 rounded text-xs font-semibold" data-sample-id="${sample.id}">
+                                 ${pdNote ? 'Editar Nota' : 'Adicionar Nota'}
+                             </button>
+                             <button class="pd-reply-btn bg-blue-100 text-blue-700 hover:bg-blue-200 px-2 py-1 rounded text-xs font-semibold" data-sample-id="${sample.id}">
+                                 Responder
+                             </button>
+                         </div>
+                    </div>
+                 `;
+                 observationsFeedList.appendChild(card);
+            });
+            
+            // Listeners
+            observationsFeedList.querySelectorAll('.pd-reply-btn').forEach(btn => {
+                 btn.addEventListener('click', openPdReplyModal);
+            });
+            observationsFeedList.querySelectorAll('.add-postit-modal-btn').forEach(btn => {
+                 btn.addEventListener('click', openPostItModal);
+            });
+            observationsFeedList.querySelectorAll('.highlight-sample-btn').forEach(btn => {
+                 btn.addEventListener('click', toggleDestaqueAmostra);
+            });
+        }
+        
+        // Feed de Post-its
+        function renderPdPostits() {
+            const globalSearch = normalizeText(globalSearchInput.value);
+            
+            const filteredNotes = allPdPostits.filter(note => {
+                if (globalSearch) {
+                     return (
+                         normalizeText(note.message).includes(globalSearch) ||
+                         normalizeText(note.context).includes(globalSearch) ||
+                         normalizeText(note.pedido).includes(globalSearch) ||
+                         normalizeText(note.pdManagerName).includes(globalSearch)
+                     );
+                }
+                return true;
+            }).sort((a, b) => (b.timestamp?.toDate() ?? 0) - (a.timestamp?.toDate() ?? 0));
+            
+            postItList.innerHTML = '';
+            if (filteredNotes.length === 0) {
+                 const msg = globalSearch ? 'Nenhum post-it encontrado na pesquisa.' : 'Nenhum post-it encontrado.';
+                 postItList.innerHTML = `<p class="text-gray-500 placeholder-postit">${msg}</p>`;
+                 return;
+            }
+            
+            filteredNotes.forEach(note => {
+                const card = document.createElement('div');
+                card.className = "p-3 rounded-lg bg-amber-50 border border-amber-200 shadow-sm";
+                const time = note.timestamp?.toDate() ? note.timestamp.toDate().toLocaleString('pt-BR') : '';
+
+                card.innerHTML = `
+                    <p class="text-sm text-gray-800">${note.message}</p>
+                    <div class="mt-2 pt-2 border-t border-amber-200">
+                        <!-- Contexto (Vendedor/Produto) -->
+                        <p class="text-xs text-gray-600">${note.context || 'Nota geral'}</p>
+                        <!-- Pedido e Faturamento (se houver) -->
+                        ${note.pedido ? `<p class="text-xs text-gray-500">Pedido: ${note.pedido} | Fat.: ${note.dataFaturamento || 'N/A'}</p>` : ''}
+                    </div>
+                    <div class="flex justify-between items-center mt-2 text-xs">
+                        <span class="font-semibold text-amber-800">${note.pdManagerName}</span>
+                        <div>
+                            <button class="delete-post-it-btn text-gray-400 hover:text-red-500 font-medium" data-note-id="${note.id}">Excluir</button>
+                            <span class="text-gray-400 ml-2">${time}</span>
                         </div>
                     </div>
                 `;
-            }).join('');
+                postItList.appendChild(card);
+            });
+        }
+        
+        function renderAccessTable() {
+             pdAccessTbody.innerHTML = '';
+             Object.entries(PD_PASSWORDS).forEach(([segment, data]) => {
+                 if(segment === 'ADMIN') return;
+                 const row = document.createElement('tr');
+                 row.innerHTML = `
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${segment}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${data.name}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 password-cell" data-password="${data.pass}">••••••</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                        <button class="toggle-password-btn text-blue-600 hover:text-blue-800" data-state="hidden">Visualizar</button>
+                    </td>
+                 `;
+                 pdAccessTbody.appendChild(row);
+             });
         }
 
-        // === LÓGICA DE RESPOSTA (P&D) ===
+        // --- Lógica de Resposta e Notificação ---
+        
+        function openPdReplyModal(e) {
+             const sampleId = e.currentTarget.dataset.sampleId;
+             currentSampleForReply = allCurrentSamples.find(s => s.id === sampleId);
+             if (!currentSampleForReply) return showAlert("Erro: Amostra não encontrada.");
+             
+             pdReplyModalProduct.textContent = `${currentSampleForReply.produto} (${currentSampleForReply.pedido})`;
+             pdReplyModalSeller.textContent = `Observação de: ${currentSampleForReply.sellerName}`;
+             pdReplyModalObservation.textContent = `"${currentSampleForReply.observation}"`;
+             pdReplyMessageInput.value = '';
+             pdReplyModal.classList.remove('hidden');
+        }
 
-        // 1. Abrir Modal de Resposta ao GESTOR (Externo)
-        function openReplyGestorModal(e) {
-            const sampleId = e.currentTarget.dataset.sampleId;
-            const sample = allSamples.find(s => s.id === sampleId);
-            if (!sample) return;
-
-            currentSampleForReply = sample;
+        async function sendReplyToPd() {
+            if (!currentSampleForReply || !currentSessionId) return;
             
-            // Procura resposta anterior do P&D
-            const pdReply = allPdReplies
-                    .filter(r => r.pedido === sample.pedido && r.produto === sample.produto && r.originalManagerName === "P&D")
-                    .sort((a, b) => (b.timestamp?.toDate() ?? 0) - (a.timestamp?.toDate() ?? 0))[0];
-
-            replyGestorModalProduct.textContent = `${sample.produto || ''} ${sample.descricao ? '- ' + sample.descricao : ''}`;
-            // ATUALIZADO: Adicionada data de Faturamento (Emissão NF)
-            replyGestorModalSeller.textContent = `Vendedor: ${sample.sellerOriginalName} | Pedido: ${sample.pedido} | Fat.: ${sample.emissaoNF || 'N/A'}`;
-            replyGestorModalObservation.textContent = `"${sample.observation || ''}"`;
-            replyGestorMessageInput.value = pdReply ? pdReply.replyMessage : ''; // Preenche com resposta anterior
-
-            replyGestorModal.classList.remove('hidden');
-        }
-
-        // 2. Enviar Resposta ao GESTOR (Externo)
-        async function sendReplyToGestor() {
-            if (!currentSampleForReply || !currentSessionId || !currentUser) return;
-
-            const pdName = currentUser.name;
-            const replyMessage = replyGestorMessageInput.value.trim();
-
-            if (!replyMessage) {
-                replyGestorMessageInput.classList.add('border-red-500');
-                setTimeout(() => replyGestorMessageInput.classList.remove('border-red-500'), 2000);
-                return;
+            const replyMessage = pdReplyMessageInput.value.trim();
+            if (!replyMessage || !currentPdName) {
+                return showAlert("A mensagem de resposta não pode estar vazia.");
             }
 
-            sendReplyGestorBtn.disabled = true;
-            sendReplyGestorBtn.textContent = 'Enviando...';
+            sendPdReplyBtn.disabled = true;
+            sendPdReplyBtn.textContent = 'A Enviar...';
 
             try {
-                // Esta resposta vai para a coleção 'respostasVendedor'
-                // O Gestor (painelgerente) vai vê-la como se fosse uma resposta de vendedor
-                const replyDataForGestor = {
-                    sellerName: pdName, // P&D responde "como se fosse" o vendedor
+                // P&D usa a mesma coleção 'notificacoesVendedor', mas com nome P&D
+                const notificationData = {
+                    managerName: `P&D (${currentPdName})`, // Identifica como P&D
                     replyMessage: replyMessage,
-                    originalManagerMessage: "Observação do P&D", // Marcador
-                    originalManagerName: "P&D", // Marcador
+                    originalObservation: currentSampleForReply.observation,
+                    sellerName: currentSampleForReply.sellerName,
                     pedido: currentSampleForReply.pedido,
                     produto: currentSampleForReply.produto,
+                    razaoSocial: currentSampleForReply.razaoSocial || '',
+                    descricao: currentSampleForReply.descricao || '',
                     timestamp: serverTimestamp(),
-                    readByManager: false // Gestor (painelgerente) não leu
+                    read: false,
+                    readByPd: false // NOVO: Flag para P&D
                 };
 
-                const gestorRepliesRef = collection(db, "sessoes", currentSessionId, "respostasVendedor");
-                await addDoc(gestorRepliesRef, replyDataForGestor);
+                const sellerNotifsRef = collection(db, "sessoes", currentSessionId, "notificacoesVendedor");
+                await addDoc(sellerNotifsRef, notificationData);
 
-                replyGestorModal.classList.add('hidden');
-
+                pdReplyModal.classList.add('hidden');
+                showAlert("Resposta enviada com sucesso.", "Sucesso", "text-green-600");
+                
             } catch (error) {
-                console.error("Erro ao enviar resposta ao gestor:", error);
+                handleFirestoreError(error, "enviar resposta P&D");
             } finally {
-                sendReplyGestorBtn.disabled = false;
-                sendReplyGestorBtn.textContent = 'Enviar Resposta';
+                sendPdReplyBtn.disabled = false;
+                sendPdReplyBtn.textContent = 'Enviar Resposta';
                 currentSampleForReply = null;
             }
         }
         
-        // 3. Abrir Modal POST-IT (Interno) - vindo do Feed
+        // --- Lógica de Post-it ---
+        
         function openPostItModal(e) {
-            const sampleId = e.currentTarget.dataset.sampleId;
-            const sample = allSamples.find(s => s.id === sampleId);
-            if (!sample) return;
-
-            currentSampleForReply = sample; // Reutiliza a variável global
-            
-            // Procura nota anterior
-            const pdNote = allPdPostits.find(n => n.sampleId === sample.id);
-
-            postItModalProduct.textContent = `${sample.produto || ''} ${sample.descricao ? '- ' + sample.descricao : ''}`;
-            // ATUALIZADO: Adicionada data de Faturamento (Emissão NF)
-            postItModalSeller.textContent = `Vendedor: ${sample.sellerOriginalName} | Pedido: ${sample.pedido} | Fat.: ${sample.emissaoNF || 'N/A'}`;
-            postItModalObservation.textContent = `"${sample.observation || ''}"`;
-            postItMessageInput.value = pdNote ? pdNote.message : ''; // Preenche com nota anterior
-            
-            sendPostItBtn.textContent = pdNote ? 'Atualizar Post-it' : 'Guardar Post-it';
-
-            postItModal.classList.remove('hidden');
+             const sampleId = e.currentTarget.dataset.sampleId;
+             currentSampleForPostIt = allCurrentSamples.find(s => s.id === sampleId);
+             if (!currentSampleForPostIt) return showAlert("Erro: Amostra não encontrada.");
+             
+             const existingNote = allPdPostits.find(p => p.contextId === sampleId);
+             
+             postitModalContext.textContent = `Ref: ${currentSampleForPostIt.produto} (Vendedor: ${currentSampleForPostIt.sellerName})`;
+             // NOVO: Adiciona descrição
+             postitModalDescription.textContent = `${currentSampleForPostIt.descricao || 'Sem descrição'}`;
+             postitModalObservation.textContent = `"${currentSampleForPostIt.observation}"`;
+             postitMessageInput.value = existingNote ? existingNote.message : '';
+             sendPostitBtn.textContent = existingNote ? 'Atualizar Nota' : 'Adicionar Nota';
+             
+             postitModal.classList.remove('hidden');
         }
         
-        // 4. Guardar Post-it (Interno) - vindo do Modal
         async function sendPostIt() {
-             if (!currentSessionId || !currentUser) return;
+             if (!currentSampleForPostIt || !currentSessionId) return;
              
-             const message = postItMessageInput.value.trim();
-             if (!message) {
-                postItMessageInput.classList.add('border-red-500');
-                setTimeout(() => postItMessageInput.classList.remove('border-red-500'), 2000);
-                return;
+             const message = postitMessageInput.value.trim();
+             if (!message || !currentPdName) {
+                 return showAlert("A nota não pode estar vazia.");
              }
-
-             sendPostItBtn.disabled = true;
+             
+             sendPostitBtn.disabled = true;
              
              try {
-                // Verifica se já existe uma nota para esta amostra
-                const existingNote = allPdPostits.find(n => n.sampleId === currentSampleForReply.id);
-                
-                const noteData = {
-                    pdManagerName: currentUser.name,
-                    message: message,
-                    sampleId: currentSampleForReply.id, // Link para a amostra
-                    context: `${currentSampleForReply.produto} (${currentSampleForReply.sellerOriginalName})`,
-                    timestamp: serverTimestamp()
-                };
-                
-                if (existingNote) {
-                    // Atualiza a nota existente
-                    sendPostItBtn.textContent = 'Atualizando...';
-                    const noteRef = doc(db, "sessoes", currentSessionId, "pdPostits", existingNote.id);
-                    await updateDoc(noteRef, noteData);
-                } else {
-                    // Adiciona uma nota nova
-                    sendPostItBtn.textContent = 'Guardando...';
-                    const postItsRef = collection(db, "sessoes", currentSessionId, "pdPostits");
-                    await addDoc(postItsRef, noteData);
-                }
-                
-                postItModal.classList.add('hidden');
-
+                 const existingNote = allPdPostits.find(p => p.contextId === currentSampleForPostIt.id);
+                 
+                 const noteData = {
+                     pdManagerName: currentPdName,
+                     message: message,
+                     context: `Amostra: ${currentSampleForPostIt.produto} (Vendedor: ${currentSampleForPostIt.sellerName})`,
+                     contextId: currentSampleForPostIt.id,
+                     pedido: currentSampleForPostIt.pedido || '',
+                     dataFaturamento: currentSampleForPostIt.emissaoNF || '',
+                     timestamp: serverTimestamp(),
+                 };
+                 
+                 if (existingNote) {
+                     // Atualiza a nota existente
+                     const noteRef = doc(db, "sessoes", currentSessionId, "pdPostits", existingNote.id);
+                     await updateDoc(noteRef, noteData);
+                 } else {
+                     // Adiciona uma nova nota
+                     const postitsRef = collection(db, "sessoes", currentSessionId, "pdPostits");
+                     await addDoc(postitsRef, noteData);
+                 }
+                 
+                 postitModal.classList.add('hidden');
+                 
              } catch (error) {
-                 console.error("Erro ao guardar Post-it:", error);
+                 handleFirestoreError(error, "salvar post-it");
              } finally {
-                 sendPostItBtn.disabled = false;
-                 // O texto do botão será resetado quando o modal abrir novamente
-                 currentSampleForReply = null;
+                 sendPostitBtn.disabled = false;
+                 currentSampleForPostIt = null;
              }
         }
         
-        // 5. Adicionar Post-it (Interno) - vindo da Caixa de Texto Principal
         async function addPostItFromInput() {
-             if (!currentSessionId || !currentUser) return;
-             
-             const message = newPostItInput.value.trim();
-             if (!message) return; // Não faz nada se vazio
+             const message = postItInput.value.trim();
+             if (!message || !currentPdName) return;
              
              addPostItBtn.disabled = true;
-             addPostItBtn.textContent = 'Guardando...';
              
              try {
                  const noteData = {
-                    pdManagerName: currentUser.name,
-                    message: message,
-                    sampleId: null, // Nota geral, não ligada a uma amostra
-                    context: "Nota Geral",
-                    timestamp: serverTimestamp()
-                };
-                
-                const postItsRef = collection(db, "sessoes", currentSessionId, "pdPostits");
-                await addDoc(postItsRef, noteData);
-                
-                newPostItInput.value = ''; // Limpa o campo
-
+                     pdManagerName: currentPdName,
+                     message: message,
+                     context: "Nota Geral (sem amostra vinculada)",
+                     contextId: null,
+                     pedido: null,
+                     dataFaturamento: null,
+                     timestamp: serverTimestamp(),
+                 };
+                 const postitsRef = collection(db, "sessoes", currentSessionId, "pdPostits");
+                 await addDoc(postitsRef, noteData);
+                 postItInput.value = ''; // Limpa o input
+                 
              } catch (error) {
-                 console.error("Erro ao guardar Post-it:", error);
+                 handleFirestoreError(error, "adicionar post-it geral");
              } finally {
                  addPostItBtn.disabled = false;
-                 addPostItBtn.textContent = 'Adicionar Post-it';
              }
         }
         
-        // 6. Apagar Post-it
         async function deletePostIt(e) {
-            const noteId = e.currentTarget.dataset.noteId;
-            if (!noteId || !currentSessionId) return;
-            
-            if (!confirm("Tem a certeza que quer apagar este post-it?")) {
-                return;
-            }
-            
-            e.currentTarget.disabled = true;
-            const noteRef = doc(db, "sessoes", currentSessionId, "pdPostits", noteId);
-            try {
-                await deleteDoc(noteRef);
-            } catch (error) {
-                console.error("Erro ao apagar post-it:", error);
-                e.currentTarget.disabled = false;
-            }
+             const noteId = e.currentTarget.dataset.noteId;
+             if (!noteId || !currentSessionId) return;
+             
+             // Adicionar confirmação
+             if (!confirm("Tem certeza que quer excluir esta nota?")) return;
+             
+             e.currentTarget.disabled = true;
+             
+             try {
+                 const noteRef = doc(db, "sessoes", currentSessionId, "pdPostits", noteId);
+                 await deleteDoc(noteRef);
+             } catch (error) {
+                 handleFirestoreError(error, "excluir post-it");
+                 e.currentTarget.disabled = false;
+             }
+             // O listener cuidará da remoção da UI
         }
-
-        // 7. Toggle Destaque
-        async function toggleDestaque(e) {
-            e.stopPropagation(); // Previne outros cliques (como abrir modal)
+        
+        // --- Lógica de Destaque ---
+        
+        async function toggleDestaqueAmostra(e) {
+            e.stopPropagation();
             const sampleId = e.currentTarget.dataset.sampleId;
-            if (!sampleId || !currentUser || !currentSessionId) return;
+            if (!currentSessionId || !sampleId) return;
 
-            // O caminho é por sessão e por usuário de P&D
-            const destaquesRef = doc(db, "sessoes", currentSessionId, "pdDestaques", currentUser.name);
-            
-            let updatedList = [...allPdDestaques];
-            if (updatedList.includes(sampleId)) {
-                updatedList = updatedList.filter(id => id !== sampleId); // Remove
-            } else {
-                updatedList.push(sampleId); // Adiciona
-            }
+            const destaquesRef = doc(db, "sessoes", currentSessionId, "configuracoes", "destaquesAmostras");
+            const button = e.currentTarget;
+            button.disabled = true;
 
             try {
-                // setDoc vai criar o documento se não existir, ou substituir
-                await setDoc(destaquesRef, { lista: updatedList });
-                // O listener (listenForPdDestaques) tratará de atualizar a UI
+                await runTransaction(db, async (transaction) => {
+                    const destaquesDoc = await transaction.get(destaquesRef);
+                    const currentList = destaquesDoc.exists() ? (destaquesDoc.data().lista || []) : [];
+                    
+                    if (currentList.includes(sampleId)) {
+                        const updatedList = currentList.filter(id => id !== sampleId);
+                        transaction.set(destaquesRef, { lista: updatedList });
+                    } else {
+                        const updatedList = [...currentList, sampleId];
+                        transaction.set(destaquesRef, { lista: updatedList });
+                    }
+                });
             } catch (error) {
-                console.error("Erro ao atualizar destaques:", error);
+                handleFirestoreError(error, "atualizar destaques");
+            } finally {
+                button.disabled = false; // O listener vai atualizar a UI
             }
         }
-
-
-        // === FUNÇÕES DO MODAL DE AMOSTRAS (GRÁFICO) ===
-
-        function showFeedbackSamples(feedbackText) {
-            if (!feedbackSamplesList || !feedbackSamplesTitle || !feedbackSamplesModal) return;
-
-            // Filtra amostras baseado na visão ATUAL (segmento P&D e datas)
-             let pdSamples = allSamples.filter(sample => {
-                return sample.pdManagerName === currentUser.name;
-            });
-            const startDate = startDateFilter.valueAsDate;
-            const endDate = endDateFilter.valueAsDate;
-            if (startDate || endDate) {
-                 pdSamples = pdSamples.filter(sample => {
-                    let sampleDate = sample.lastUpdate?.toDate ? sample.lastUpdate.toDate() : null;
-                    if (!sampleDate && sample.emissaoNF) {
-                        const parts = sample.emissaoNF.split('/');
-                        if (parts.length === 3) sampleDate = new Date(`${parts[2]}-${parts[1]}-${parts[0]}T12:00:00Z`);
-                    }
-                    if (!sampleDate) return false;
-                    const start = startDate ? new Date(Date.UTC(startDate.getUTCFullYear(), startDate.getUTCMonth(), startDate.getUTCDate(), 0, 0, 0)) : null;
-                    const end = endDate ? new Date(Date.UTC(endDate.getUTCFullYear(), endDate.getUTCMonth(), endDate.getUTCDate(), 23, 59, 59)) : null;
-                    if (start && sampleDate < start) return false;
-                    if (end && sampleDate > end) return false;
-                    return true;
-                });
+        
+        // Sino de Notificação (mostra respostas de Gerentes E Vendedores)
+        function renderNotificationBell() {
+             // O P&D só quer saber de respostas NÃO LIDAS
+             const unreadManagerReplies = allManagerReplies.filter(r => !r.readByPd);
+             const unreadSellerReplies = allSellerReplies.filter(r => !r.readByManager); // P&D usa a mesma flag
+             
+             const unreadCount = unreadManagerReplies.length + unreadSellerReplies.length;
+             
+             let bellBtn = document.getElementById('notification-btn');
+             let countBadge = document.getElementById('notification-count-badge');
+             
+             if (!bellBtn) {
+                const header = document.querySelector('#dashboard header .flex.items-center.gap-4');
+                const bellWrapper = document.createElement('div');
+                bellWrapper.className = "relative";
+                bellWrapper.innerHTML = `
+                    <button id="notification-btn" class="text-gray-500 hover:text-gray-700">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path></svg>
+                        <span id="notification-count-badge" class="hidden absolute top-0 right-0 -mt-1 -mr-1 px-2 py-0.5 bg-red-500 text-white text-xs rounded-full">0</span>
+                    </button>
+                `;
+                header.insertBefore(bellWrapper, logoutBtn);
+                bellBtn = document.getElementById('notification-btn');
+                countBadge = document.getElementById('notification-count-badge');
+             }
+             
+             // Atualiza o listener com as respostas mais recentes
+             bellBtn.onclick = () => openNotificationModal(unreadManagerReplies, unreadSellerReplies);
+             
+             if (unreadCount > 0) {
+                 countBadge.textContent = unreadCount;
+                 countBadge.classList.remove('hidden');
+             } else {
+                 countBadge.classList.add('hidden');
+             }
+        }
+        
+        function openNotificationModal(managerReplies, sellerReplies) {
+             notificationList.innerHTML = '';
+             
+             if (managerReplies.length === 0 && sellerReplies.length === 0) {
+                 notificationList.innerHTML = '<p class="text-gray-500">Nenhuma resposta nova.</p>';
+                 notificationModal.classList.remove('hidden');
+                 return;
+             }
+             
+             // Junta, ordena por data
+             const allReplies = [
+                 ...managerReplies.map(r => ({ ...r, type: 'manager', ref: doc(db, "sessoes", currentSessionId, "notificacoesVendedor", r.id) })),
+                 ...sellerReplies.map(r => ({ ...r, type: 'seller', ref: doc(db, "sessoes", currentSessionId, "respostasVendedor", r.id) }))
+             ].sort((a,b) => (b.timestamp?.toDate() ?? 0) - (a.timestamp?.toDate() ?? 0));
+             
+             allReplies.forEach(reply => {
+                 const item = document.createElement('div');
+                 item.className = "p-3 border-b border-gray-100";
+                 
+                 if (reply.type === 'manager') {
+                     item.innerHTML = `
+                        <p><span class="font-semibold text-blue-600">${reply.managerName}</span> (Gerente) respondeu:</p>
+                        <p class="italic text-gray-700 my-1">"${reply.replyMessage}"</p>
+                        <p class="text-xs text-gray-500">Ref: ${reply.produto} (Vendedor: ${reply.sellerName})</p>
+                        <div class="text-right mt-2">
+                            <button class="mark-as-read-btn bg-gray-200 text-gray-700 text-xs font-semibold py-1 px-3 rounded hover:bg-gray-300" data-type="manager" data-id="${reply.id}">Marcar como Lida</button>
+                        </div>
+                     `;
+                 } else { // type === 'seller'
+                      item.innerHTML = `
+                        <p><span class="font-semibold text-green-600">${reply.sellerName}</span> (Vendedor) respondeu:</p>
+                        <p class="italic text-gray-700 my-1">"${reply.replyMessage}"</p>
+                        <p class="text-xs text-gray-500">Ref: ${reply.produto} (Pedido: ${reply.pedido})</p>
+                        <p class="text-xs text-gray-400">Mensagem original: "${reply.originalManagerMessage}"</p>
+                        <div class="text-right mt-2">
+                            <button class="mark-as-read-btn bg-gray-200 text-gray-700 text-xs font-semibold py-1 px-3 rounded hover:bg-gray-300" data-type="seller" data-id="${reply.id}">Marcar como Lida</button>
+                        </div>
+                     `;
+                 }
+                 notificationList.appendChild(item);
+             });
+             
+             notificationModal.classList.remove('hidden');
+        }
+        
+        async function markReplyAsRead(e) {
+             const button = e.target;
+             const replyId = button.dataset.id;
+             const type = button.dataset.type;
+             button.disabled = true;
+             
+             try {
+                 let replyRef;
+                 let fieldToUpdate;
+                 
+                 if (type === 'manager') {
+                     replyRef = doc(db, "sessoes", currentSessionId, "notificacoesVendedor", replyId);
+                     fieldToUpdate = { readByPd: true };
+                 } else { // seller
+                     replyRef = doc(db, "sessoes", currentSessionId, "respostasVendedor", replyId);
+                     fieldToUpdate = { readByManager: true };
+                 }
+                 
+                 await updateDoc(replyRef, fieldToUpdate);
+                 // O listener vai atualizar o sino
+                 
+             } catch (error) {
+                 handleFirestoreError(error, "marcar resposta como lida");
+                 button.disabled = false;
+             }
+        }
+        
+        // --- Modal de Amostras (Pesquisa Global) ---
+        
+        function openGlobalSearchModal(samples) {
+            feedbackSamplesTitle.textContent = `Resultados da Pesquisa: "${globalSearchInput.value}" (${samples.length})`;
+            feedbackSamplesList.innerHTML = '';
+            
+            if (samples.length === 0) {
+                 feedbackSamplesList.innerHTML = '<p class="text-gray-500">Nenhum resultado encontrado.</p>';
+                 feedbackSamplesModal.classList.remove('hidden');
+                 return;
             }
+            
+            samples.forEach(sample => {
+                 const itemDiv = document.createElement('div');
+                 const isHighlighted = highlightedSamplesCache.includes(sample.id);
+                 itemDiv.className = `feedback-sample-item text-sm ${isHighlighted ? 'highlight' : ''}`;
+                 
+                 // Construir a thread de comunicação (igual ao feed)
+                 let repliesHtml = '';
+                 const pdNote = allPdPostits.find(p => p.contextId === sample.id);
+                 if (pdNote) repliesHtml += `<div class="pd-note"><p><strong>Nota P&D:</strong> ${pdNote.message}</p></div>`;
+                 const managerReply = allManagerReplies.find(r => r.sellerName === sample.sellerName && r.pedido === sample.pedido && r.produto === sample.produto && r.originalObservation === sample.observation);
+                 if (managerReply) {
+                     repliesHtml += `<div class="manager-reply"><p><strong>${managerReply.managerName}:</strong> ${managerReply.replyMessage}</p></div>`;
+                     const sellerReply = allSellerReplies.find(r => r.originalManagerMessage === managerReply.replyMessage && r.pedido === sample.pedido);
+                     if (sellerReply) repliesHtml += `<div class="seller-reply"><p><strong>${sellerReply.sellerName}:</strong> ${sellerReply.replyMessage}</p></div>`;
+                 }
+                 
+                 const starIcon = isHighlighted ?
+                     `<svg class="w-5 h-5 text-amber-500" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588 1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>` :
+                     `<svg class="w-5 h-5 text-gray-400 hover:text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.524 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.524 4.674c.3.921-.755 1.688-1.54 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.784.57-1.838-.197-1.539-1.118l1.524-4.674a1 1 0 00-.363-1.118L2.98 10.1c-.783-.57-.38-1.81.588 1.81h4.914a1 1 0 00.951-.69l1.524-4.674z"></path></svg>`;
 
-            const filtered = pdSamples.filter(sample => {
-                return getCanonicalFeedback(sample.feedback) === feedbackText;
+                 itemDiv.innerHTML = `
+                     <div class="flex justify-between items-start">
+                         <div>
+                             <p class="font-semibold">${sample.produto} (${sample.razaoSocial})</p>
+                             <p class="text-xs text-gray-600">${sample.descricao}</p>
+                             <p class="text-xs text-gray-500 mt-1">
+                                 Vendedor: ${sample.sellerName} | Pedido: ${sample.pedido} | NF: ${sample.emissaoNF || 'N/A'}
+                             </p>
+                             <p class="font-medium text-gray-800 mt-1">Feedback: ${sample.feedback || 'Pendente'}</p>
+                         </div>
+                         <button class="highlight-sample-btn p-1 rounded-full hover:bg-gray-100" data-sample-id="${sample.id}">
+                             ${starIcon}
+                         </button>
+                     </div>
+                     ${sample.observation ? `<p class="text-xs text-gray-600 mt-1 italic">Obs: ${sample.observation}</p>` : ''}
+                     ${repliesHtml}
+                 `;
+                 feedbackSamplesList.appendChild(itemDiv);
             });
             
-            // Ordena por destaque
-            filtered.sort((a, b) => {
-                const isAHighlighted = allPdDestaques.includes(a.id);
-                const isBHighlighted = allPdDestaques.includes(b.id);
-                if (isAHighlighted && !isBHighlighted) return -1;
-                if (!isAHighlighted && isBHighlighted) return 1;
-                return a.sellerOriginalName.localeCompare(b.sellerOriginalName); // Fallback sort
+            // Listeners
+            feedbackSamplesList.querySelectorAll('.highlight-sample-btn').forEach(btn => {
+                 btn.addEventListener('click', toggleDestaqueAmostra);
             });
-
-            feedbackSamplesTitle.textContent = `Amostras com: "${feedbackText}" (${filtered.length})`;
-
-            if (filtered.length === 0) {
-                feedbackSamplesList.innerHTML = '<p class="text-gray-500">Nenhuma amostra encontrada.</p>';
-            } else {
-                feedbackSamplesList.innerHTML = filtered.map(sample => {
-                    const hasObservation = sample.observation && sample.observation.trim() !== '';
-                    const isHighlighted = allPdDestaques.includes(sample.id);
-                    
-                    // Botões de ação
-                    const postItBtn = `<button class="post-it-feed-btn bg-purple-100 text-purple-700 hover:bg-purple-200 px-2 py-1 rounded text-xs font-semibold ml-2" data-sample-id="${sample.id}">Post-it</button>`;
-                    const replyBtn = `<button class="reply-gestor-feed-btn bg-blue-100 text-blue-700 hover:bg-blue-200 px-2 py-1 rounded text-xs font-semibold ml-2" data-sample-id="${sample.id}">Responder</button>`;
-                    
-                    // Botão de Destaque
-                    const starIcon = isHighlighted 
-                        ? `<svg class="w-5 h-5 text-amber-500" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588 1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>`
-                        : `<svg class="w-5 h-5 text-gray-400 hover:text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.524 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.524 4.674c.3.921-.755 1.688-1.54 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.784.57-1.838-.197-1.539-1.118l1.524-4.674a1 1 0 00-.363-1.118L2.98 10.1c-.783-.57-.38-1.81.588 1.81h4.914a1 1 0 00.951-.69l1.524-4.674z"></path></svg>`;
-                    const highlightButtonHtml = `
-                        <button class="highlight-btn p-1 rounded-full hover:bg-gray-100" data-sample-id="${sample.id}" title="Destacar">
-                            ${starIcon}
-                        </button>
-                    `;
-                    
-                    // ATUALIZADO: Adicionada data de Faturamento (Emissão NF)
-                    const faturamentoDate = sample.emissaoNF ? ` | <strong>Fat.:</strong> ${sample.emissaoNF}` : '';
-
-                    return `
-                        <div class="feedback-sample-item ${isHighlighted ? 'highlighted-sample-item' : ''}">
-                            <div class="flex justify-between items-start">
-                                <div>
-                                    <p class="font-semibold">${sample.produto || ''}</p>
-                                    <p class="text-xs text-gray-600">${sample.descricao || ''}</p>
-                                    <p><strong>Vendedor:</strong> ${sample.sellerOriginalName} (Pedido: ${sample.pedido})</p>
-                                    <p><strong>Cliente:</strong> ${sample.razaoSocial || ''}</p>
-                                    <p class="text-xs text-gray-500 mt-1">
-                                        ${sample.qtde ? `<strong>Qtde:</strong> ${sample.qtde}` : ''}
-                                        ${sample.notaFiscal ? ` | <strong>NF:</strong> ${sample.notaFiscal}` : ''}
-                                        ${faturamentoDate}
-                                    </p>
-                                </div>
-                                <div class="flex-shrink-0 flex flex-col space-y-1 items-end">
-                                    ${highlightButtonHtml}
-                                    ${hasObservation ? replyBtn : ''}
-                                    ${hasObservation ? postItBtn : ''}
-                                </div>
-                            </div>
-                            ${hasObservation ? `<p class="text-xs text-gray-600 mt-1 italic">Obs: ${sample.observation || ''}</p>` : ''}
-                        </div>
-                    `;
-                }).join('');
-
-                 // Adiciona os listeners para os botões DEPOIS de inserir o HTML
-                 feedbackSamplesList.querySelectorAll('.reply-gestor-feed-btn').forEach(btn => {
-                     btn.addEventListener('click', (e) => {
-                         feedbackSamplesModal.classList.add('hidden');
-                         openReplyGestorModal(e);
-                     });
-                 });
-                 feedbackSamplesList.querySelectorAll('.post-it-feed-btn').forEach(btn => {
-                     btn.addEventListener('click', (e) => {
-                         feedbackSamplesModal.classList.add('hidden');
-                         openPostItModal(e);
-                     });
-                 });
-                 // Listener para destaques no modal
-                 feedbackSamplesList.querySelectorAll('.highlight-btn').forEach(btn => {
-                     btn.addEventListener('click', toggleDestaque);
-                 });
-            }
+            
             feedbackSamplesModal.classList.remove('hidden');
         }
 
-        // === FUNÇÕES DE FILTRO E PREENCHIMENTO ===
 
-        function populateFeedbackFilter(samples) {
-            const feedbacks = [...new Set(
-                samples
-                    .filter(s => s.feedback && s.feedback.trim() !== '')
-                    .map(s => getCanonicalFeedback(s.feedback))
-            )].sort();
-
-            const currentVal = observationFeedbackFilter.value;
-            observationFeedbackFilter.innerHTML = '<option value="TODOS">Todos os Feedbacks</option>';
-            feedbacks.forEach(f => {
-                observationFeedbackFilter.innerHTML += `<option value="${f}">${f}</option>`;
-            });
-
-            if ([...observationFeedbackFilter.options].some(o => o.value === currentVal)) {
-                 observationFeedbackFilter.value = currentVal;
-            } else {
-                 observationFeedbackFilter.value = "TODOS";
+        // --- Event Listeners Globais ---
+        pdLoginBtn.addEventListener('click', login);
+        logoutBtn.addEventListener('click', logout);
+        observationSegmentFilter.addEventListener('change', () => renderObservationsFeed(allCurrentSamples));
+        
+        globalSearchInput.addEventListener('keyup', (e) => {
+            // Se pressionar Enter, abre o modal de pesquisa
+            if (e.key === 'Enter') {
+                const searchTerm = normalizeText(globalSearchInput.value);
+                if (!searchTerm) {
+                    renderObservationsFeed(allCurrentSamples);
+                    renderPdPostits();
+                    return;
+                }
+                // Filtra as amostras (não apenas as com observação)
+                const filteredSamples = allCurrentSamples.filter(s => 
+                    normalizeText(s.sellerName).includes(searchTerm) ||
+                    normalizeText(s.produto).includes(searchTerm) ||
+                    normalizeText(s.descricao).includes(searchTerm) ||
+                    normalizeText(s.razaoSocial).includes(searchTerm) ||
+                    (s.observation && normalizeText(s.observation).includes(searchTerm)) ||
+                    normalizeText(s.pedido).includes(searchTerm)
+                ).sort((a, b) => (b.lastUpdate?.toDate ? b.lastUpdate.toDate().getTime() : 0) - (a.lastUpdate?.toDate ? a.lastUpdate.toDate().getTime() : 0));
+                
+                openGlobalSearchModal(filteredSamples);
+                
+            } else { // Pesquisa em tempo real nos feeds
+                renderObservationsFeed(allCurrentSamples);
+                renderPdPostits();
             }
-        }
-
-
-        // === LISTENERS DE EVENTOS (Geral) ===
-
-        // Login P&D
-        pdLoginButtons.addEventListener('click', (e) => {
-            const button = e.target.closest('.login-btn');
-            if (button) openPasswordModal({ currentTarget: button });
-        });
-        cancelPasswordBtn.addEventListener('click', closePasswordModal);
-        submitPasswordBtn.addEventListener('click', handlePdLogin);
-        passwordInput.addEventListener('keyup', (e) => {
-            if (e.key === 'Enter') handlePdLogin();
-        });
-        
-        // Login Admin (Colinha)
-        openAdminPasswordBtn.addEventListener('click', openAdminPasswordModal);
-        cancelAdminPasswordBtn.addEventListener('click', closeAdminPasswordModal);
-        submitAdminPasswordBtn.addEventListener('click', handleAdminLogin);
-        adminPasswordInput.addEventListener('keyup', (e) => {
-            if (e.key === 'Enter') handleAdminLogin();
-        });
-        closePasswordListBtn.addEventListener('click', () => passwordListModal.classList.add('hidden'));
-
-        // Dashboard
-        logoutBtn.addEventListener('click', handleLogout);
-        startDateFilter.addEventListener('change', () => renderDashboard());
-        endDateFilter.addEventListener('change', () => renderDashboard());
-        
-        // Filtros do Feed de Observação
-        observationFeedbackFilter.addEventListener('change', () => renderDashboard());
-        sellerSearchInput.addEventListener('input', () => renderDashboard()); // Pesquisa Vendedor
-
-        // Modal de Amostras (do Gráfico)
-        closeFeedbackSamplesBtn.addEventListener('click', () => {
-            feedbackSamplesModal.classList.add('hidden');
         });
 
-        // Modal de Resposta ao GESTOR (Externo)
-        observationsFeedList.addEventListener('click', (e) => {
-             const button = e.target.closest('.reply-gestor-feed-btn');
-             if (button) openReplyGestorModal({ currentTarget: button });
-        });
-        cancelReplyGestorBtn.addEventListener('click', () => replyGestorModal.classList.add('hidden'));
-        sendReplyGestorBtn.addEventListener('click', sendReplyToGestor);
-        
-        // Modal de POST-IT (Interno)
-        observationsFeedList.addEventListener('click', (e) => {
-             const button = e.target.closest('.post-it-feed-btn');
-             if (button) openPostItModal({ currentTarget: button });
-        });
-        cancelPostItBtn.addEventListener('click', () => postItModal.classList.add('hidden'));
-        sendPostItBtn.addEventListener('click', sendPostIt);
+        // Modais
+        closeFeedbackSamplesBtn.addEventListener('click', () => feedbackSamplesModal.classList.add('hidden'));
+        cancelPdReplyBtn.addEventListener('click', () => pdReplyModal.classList.add('hidden'));
+        sendPdReplyBtn.addEventListener('click', sendReplyToPd);
+        cancelPostitBtn.addEventListener('click', () => postitModal.classList.add('hidden'));
+        sendPostitBtn.addEventListener('click', sendPostIt);
         
         // Caixa de Post-it principal
         addPostItBtn.addEventListener('click', addPostItFromInput);
@@ -1747,22 +1429,61 @@
              if (button) deletePostIt({ currentTarget: button });
         });
 
-        // Modal de Notificações (Respostas dos Gestores)
-        notificationBtn.addEventListener('click', openNotificationModal);
+        // Modal de Notificações (Respostas dos Gestores/Vendedores)
         closeNotificationBtn.addEventListener('click', () => notificationModal.classList.add('hidden'));
         notificationList.addEventListener('click', (e) => {
             const button = e.target.closest('.mark-as-read-btn');
             if (button) markReplyAsRead({ target: button });
         });
         
-        // Listeners de Destaque (são adicionados dinamicamente)
-
+        // Tabela de Acessos (Admin)
+        pdAccessTbody.addEventListener('click', (e) => {
+            const button = e.target.closest('.toggle-password-btn');
+            if (button) {
+                const cell = button.closest('tr').querySelector('.password-cell');
+                const password = cell.dataset.password;
+                if (button.dataset.state === 'hidden') {
+                    cell.textContent = password;
+                    button.textContent = 'Ocultar';
+                    button.dataset.state = 'visible';
+                } else {
+                    cell.textContent = '••••••';
+                    button.textContent = 'Visualizar';
+                    button.dataset.state = 'hidden';
+                }
+            }
+        });
 
         // --- INICIALIZAÇÃO ---
         (async () => {
             try {
-                await signInAnonymously(auth); // Garante que estamos autenticados no Firebase
-                populatePdButtons(); // Preenche os botões de login P&D
+                await signInAnonymously(auth);
+                populatePdButtons();
+                
+                // Tenta fazer login automático se já esteve logado
+                const savedSegment = localStorage.getItem('pdSegment');
+                if (savedSegment && PD_PASSWORDS[savedSegment]) {
+                    currentSegment = savedSegment;
+                    currentPdName = PD_PASSWORDS[savedSegment].name;
+                    pdLoginBtn.disabled = true;
+                    pdLoginBtn.textContent = 'A carregar...';
+                    
+                    const sessionId = await getActiveSessionId();
+                    if (!sessionId) {
+                        loginError.textContent = 'Nenhuma sessão ativa encontrada. Contate o administrador.';
+                        logout();
+                        return;
+                    }
+                    
+                    dashboardTitle.textContent = `Painel P&D: ${currentSegment}`;
+                    if (currentSegment === 'ADMIN') {
+                        adminAccessSection.classList.remove('hidden');
+                        renderAccessTable();
+                    }
+                    
+                    await loadAllData(sessionId);
+                }
+                
             } catch (error) {
                 console.error("Firebase Auth Error:", error);
                 document.body.innerHTML = '<p class="text-center text-red-500 p-8">Erro crítico ao conectar com o Firebase. Verifique a configuração.</p>';
@@ -1772,6 +1493,8 @@
     </script>
 </body>
 </html>
+
+
 
 
 
