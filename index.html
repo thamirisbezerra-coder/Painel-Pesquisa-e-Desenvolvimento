@@ -43,7 +43,7 @@
             background-color: #fffbeb; /* bg-amber-50 */
         }
 
-        /* NOVO: Estilo para os cards de login */
+        /* Estilo para os cards de login (sem ícone) */
         .login-card {
             display: flex;
             justify-content: space-between;
@@ -56,6 +56,7 @@
             color: #374151; /* text-gray-700 */
             transition: all 0.2s ease-in-out;
             cursor: pointer;
+            text-align: left;
         }
         .login-card:hover {
             background-color: #f3f4f6; /* bg-gray-100 */
@@ -67,26 +68,7 @@
             border-color: #2563eb; /* border-blue-700 */
             box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
         }
-        .login-card-details {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem; /* space-x-3 */
-        }
-        .login-card-icon {
-            flex-shrink: 0;
-            width: 2.5rem; /* w-10 */
-            height: 2.5rem; /* h-10 */
-            border-radius: 9999px; /* rounded-full */
-            background-color: #e0e7ff; /* bg-indigo-100 */
-            color: #4f46e5; /* text-indigo-600 */
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .login-card.selected .login-card-icon {
-            background-color: white;
-            color: #3b82f6; /* bg-blue-600 */
-        }
+        /* Ícone individual removido */
         .login-card-name {
             font-size: 0.875rem; /* text-sm */
             color: #6b7280; /* text-gray-500 */
@@ -103,16 +85,17 @@
     <div id="login-view" class="grid place-items-center min-h-screen p-4">
         <div class="bg-white rounded-2xl shadow-lg border border-gray-200 w-full max-w-2xl p-8">
             <div class="flex justify-center items-center gap-3 mb-6">
+                <!-- ÍCONE PRINCIPAL (Lupa de Pesquisa) -->
                 <div class="p-3 bg-indigo-100 rounded-full">
                     <svg class="w-8 h-8 text-indigo-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09ZM18.259 8.715 18 9.75l-.259-1.035a3.375 3.375 0 0 0-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 0 0 2.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 0 0 2.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 0 0-2.456 2.456Z" />
+                      <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
                     </svg>
                 </div>
                 <h1 class="text-3xl font-bold text-gray-800 text-center">Painel de P&D (v2)</h1>
             </div>
             <p class="text-gray-600 text-center mb-8">Selecione a sua área para aceder ao painel.</p>
             
-            <!-- NOVO LAYOUT DE LOGIN (CARDS) -->
+            <!-- LAYOUT DE LOGIN (CARDS SEM ÍCONES) -->
             <div id="pd-login-buttons" class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <!-- Cards de login serão inseridos aqui pelo JS -->
             </div>
@@ -252,7 +235,6 @@
             <h3 class="text-xl font-bold mb-4">Adicionar Nota P&D</h3>
             <div class="mb-4 p-3 bg-gray-100 rounded border text-sm">
                 <p class="font-semibold" id="postit-modal-context"></p>
-                <!-- NOVO: Descrição adicionada -->
                 <p class="text-xs text-gray-600" id="postit-modal-description"></p>
                 <p class="italic mt-2" id="postit-modal-observation">"${' '}"</p>
             </div>
@@ -277,7 +259,7 @@
                 <button id="close-notification-btn" class="text-2xl font-bold text-gray-500 hover:text-gray-800">&times;</button>
             </div>
             <div id="notification-list" class="space-y-4 max-h-[60vh] overflow-y-auto pr-2">
-                <p class="text-gray-500">Nenhuma resposta recebida.</p>
+                <p class="text-gray-500">Nenhuma resposta nova.</p>
             </div>
         </div>
     </div>
@@ -364,7 +346,7 @@
         const sendPdReplyBtn = document.getElementById('send-pd-reply-btn');
         const postitModal = document.getElementById('postit-modal');
         const postitModalContext = document.getElementById('postit-modal-context');
-        const postitModalDescription = document.getElementById('postit-modal-description'); // NOVO
+        const postitModalDescription = document.getElementById('postit-modal-description');
         const postitModalObservation = document.getElementById('postit-modal-observation');
         const postitMessageInput = document.getElementById('postit-message-input');
         const cancelPostitBtn = document.getElementById('cancel-postit-btn');
@@ -372,7 +354,6 @@
         const notificationModal = document.getElementById('notification-modal');
         const notificationList = document.getElementById('notification-list');
         const closeNotificationBtn = document.getElementById('close-notification-btn');
-        const notificationBtn = document.getElementById('notification-btn'); // Será criado dinamicamente
         const customAlert = document.getElementById('custom-alert');
         const customAlertTitle = document.getElementById('custom-alert-title');
         const customAlertMessage = document.getElementById('custom-alert-message');
@@ -452,10 +433,8 @@
         }
 
         // --- Lógica de Carregamento de Dados (v2) ---
-
-        // CORREÇÃO: Funções movidas para cima para evitar ReferenceError
         
-        // Listeners de Comunicação (para o Sino)
+        // Define as funções de listener ANTES de loadAllData
         function listenForManagerReplies(sessionId) {
             if (managerRepliesListenerUnsubscribe) managerRepliesListenerUnsubscribe();
             const q = query(collection(db, "sessoes", sessionId, "notificacoesVendedor"));
@@ -482,11 +461,9 @@
             }, (error) => handleFirestoreError(error, "ouvir respostas dos vendedores"));
         }
 
-        // Listener de Post-it
         function listenForPdPostits(sessionId) {
             if (pdPostitsListenerUnsubscribe) pdPostitsListenerUnsubscribe();
             
-            // CORREÇÃO: Query deve usar a variável sessionId, não currentSessionId
             const q = query(
                 collection(db, "sessoes", sessionId, "pdPostits"),
                 orderBy("timestamp", "desc")
@@ -507,7 +484,6 @@
             });
         }
 
-        // Lógica de Destaque
         function listenForDestaques(sessionId) {
             if (destaquesListenerUnsubscribe) destaquesListenerUnsubscribe();
             
@@ -519,11 +495,18 @@
                  if (!dashboardContent.classList.contains('hidden')) {
                      renderObservationsFeed(allCurrentSamples);
                  }
-                 // Re-renderiza o modal de amostras (se estiver aberto)
                  if (!feedbackSamplesModal.classList.contains('hidden')) {
-                     // Esta função 'showFeedbackSamples' não existe neste painel, vamos usar a de pesquisa
-                     // const title = feedbackSamplesTitle.textContent;
-                     // openGlobalSearchModal(allCurrentSamples); // Re-mostra com o cache atualizado
+                     // Atualiza o modal de pesquisa se estiver aberto
+                     const searchTerm = normalizeText(globalSearchInput.value);
+                     const filteredSamples = allCurrentSamples.filter(s => 
+                        normalizeText(s.sellerName).includes(searchTerm) ||
+                        normalizeText(s.produto).includes(searchTerm) ||
+                        normalizeText(s.descricao).includes(searchTerm) ||
+                        normalizeText(s.razaoSocial).includes(searchTerm) ||
+                        (s.observation && normalizeText(s.observation).includes(searchTerm)) ||
+                        normalizeText(s.pedido).includes(searchTerm)
+                     ).sort((a, b) => (b.lastUpdate?.toDate ? b.lastUpdate.toDate().getTime() : 0) - (a.lastUpdate?.toDate ? a.lastUpdate.toDate().getTime() : 0));
+                     openGlobalSearchModal(filteredSamples);
                  }
                  
             }, (error) => {
@@ -581,7 +564,7 @@
             // 2. Ouve todas as threads de comunicação e notas
             listenForManagerReplies(sessionId);
             listenForSellerReplies(sessionId);
-            listenForPdPostits(sessionId); // <-- CHAMADA CORRIGIDA
+            listenForPdPostits(sessionId);
             listenForDestaques(sessionId);
 
             // 3. Busca todos os vendedores da sessão
@@ -631,28 +614,20 @@
 
         // --- Lógica de Login ---
         
-        // NOVO: `populatePdButtons` com cards profissionais
+        // NOVO: `populatePdButtons` com cards (sem ícones individuais)
         function populatePdButtons() {
             pdLoginButtons.innerHTML = '';
-            // Ícone genérico para P&D
-            const iconSvg = `
-                <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="m15.75 15.75-2.489-2.489m0 0a3.375 3.375 0 1 0-4.773-4.773 3.375 3.375 0 0 0 4.774 4.774ZM21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-                </svg>
-            `;
 
             Object.entries(PD_PASSWORDS).forEach(([segment, data]) => {
                 const card = document.createElement('button');
                 card.className = "login-card";
                 card.dataset.segment = segment;
                 
+                // HTML sem o span do ícone
                 card.innerHTML = `
-                    <div class="login-card-details">
-                        <span class="login-card-icon">${iconSvg}</span>
-                        <div>
-                            <p>${segment}</p>
-                            <span class="login-card-name">${data.name}</span>
-                        </div>
+                    <div>
+                        <p>${segment}</p>
+                        <span class="login-card-name">${data.name}</span>
                     </div>
                     <svg class="w-5 h-5 opacity-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
                         <path fill-rule="evenodd" d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16Zm3.857-9.809a.75.75 0 0 0-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 1 0-1.06 1.061l2.5 2.5a.75.75 0 0 0 1.137-.089l4-5.5Z" clip-rule="evenodd" />
@@ -910,7 +885,6 @@
                     <div class="flex justify-between items-start">
                         <div class="mb-2">
                             <p class="font-bold text-gray-800">${sample.produto}</p>
-                            <!-- NOVO: Descrição adicionada -->
                             <p class="text-sm text-gray-600">${sample.descricao || 'Sem descrição'}</p>
                             <p class="text-xs text-gray-500">${sample.razaoSocial || 'Cliente N/A'}</p>
                         </div>
@@ -925,7 +899,6 @@
                     <div class="flex justify-between items-end text-xs text-gray-500 mt-3 pt-3 border-t">
                          <div>
                              <p>- ${sample.sellerName} (Pedido: ${sample.pedido})</p>
-                             <!-- NOVO: Data Faturamento adicionada -->
                              <p class="text-gray-400">Fat.: ${sample.emissaoNF || 'N/A'} | Obs.: ${time}</p>
                          </div>
                          <div class="flex gap-2">
@@ -1084,7 +1057,6 @@
              const existingNote = allPdPostits.find(p => p.contextId === sampleId);
              
              postitModalContext.textContent = `Ref: ${currentSampleForPostIt.produto} (Vendedor: ${currentSampleForPostIt.sellerName})`;
-             // NOVO: Adiciona descrição
              postitModalDescription.textContent = `${currentSampleForPostIt.descricao || 'Sem descrição'}`;
              postitModalObservation.textContent = `"${currentSampleForPostIt.observation}"`;
              postitMessageInput.value = existingNote ? existingNote.message : '';
@@ -1237,10 +1209,15 @@
                 header.insertBefore(bellWrapper, logoutBtn);
                 bellBtn = document.getElementById('notification-btn');
                 countBadge = document.getElementById('notification-count-badge');
+                
+                // Adiciona o listener SÓ QUANDO o botão é criado
+                bellBtn.addEventListener('click', () => {
+                     // Lê as listas frescas no momento do clique
+                     const freshUnreadManager = allManagerReplies.filter(r => !r.readByPd);
+                     const freshUnreadSeller = allSellerReplies.filter(r => !r.readByManager);
+                     openNotificationModal(freshUnreadManager, freshUnreadSeller);
+                });
              }
-             
-             // Atualiza o listener com as respostas mais recentes
-             bellBtn.onclick = () => openNotificationModal(unreadManagerReplies, unreadSellerReplies);
              
              if (unreadCount > 0) {
                  countBadge.textContent = unreadCount;
@@ -1468,6 +1445,14 @@
                     pdLoginBtn.disabled = true;
                     pdLoginBtn.textContent = 'A carregar...';
                     
+                    // Simula o clique no card correto para o feedback visual
+                    pdLoginButtons.querySelectorAll('.login-card').forEach(c => {
+                         if(c.dataset.segment === savedSegment) {
+                             c.classList.add('selected');
+                             c.querySelector('svg:last-child').classList.remove('opacity-0');
+                         }
+                    });
+                    
                     const sessionId = await getActiveSessionId();
                     if (!sessionId) {
                         loginError.textContent = 'Nenhuma sessão ativa encontrada. Contate o administrador.';
@@ -1493,6 +1478,9 @@
     </script>
 </body>
 </html>
+
+
+
 
 
 
