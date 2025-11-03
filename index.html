@@ -11,6 +11,21 @@
     <style>
         body { font-family: 'Inter', sans-serif; background-color: #f3f4f6; }
 
+        /* Barras de rolagem */
+        #observations-feed-list, #post-it-list, #feedback-samples-list {
+            overflow-y: auto;
+        }
+        #observations-feed-list, #post-it-list {
+            max-height: 448px; /* 28rem */
+        }
+        #feedback-samples-list {
+            max-height: 70vh;
+        }
+        
+        /* Ocultar scrollbar mas manter rolagem */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
         /* Estilos para o feed de observações e respostas */
         .manager-reply, .seller-reply, .pd-note {
             margin-top: 0.5rem;
@@ -43,70 +58,51 @@
             background-color: #fffbeb; /* bg-amber-50 */
         }
 
-        /* Estilo para os cards de login (sem ícone) */
-        .login-card {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 1rem 1.25rem;
-            background-color: #f9fafb; /* bg-gray-50 */
-            border: 1px solid #e5e7eb; /* border-gray-200 */
-            border-radius: 0.5rem; /* rounded-lg */
-            font-weight: 600; /* font-semibold */
-            color: #374151; /* text-gray-700 */
-            transition: all 0.2s ease-in-out;
-            cursor: pointer;
-            text-align: left;
-        }
-        .login-card:hover {
-            background-color: #f3f4f6; /* bg-gray-100 */
-            border-color: #d1d5db; /* border-gray-300 */
-        }
-        .login-card.selected {
-            background-color: #3b82f6; /* bg-blue-600 */
-            color: white;
-            border-color: #2563eb; /* border-blue-700 */
-            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-        }
-        /* Ícone individual removido */
-        .login-card-name {
-            font-size: 0.875rem; /* text-sm */
-            color: #6b7280; /* text-gray-500 */
-            font-weight: 500; /* font-medium */
-        }
-        .login-card.selected .login-card-name {
-            color: #dbeafe; /* text-blue-100 */
-        }
+        /* Estilo Card de Login removido */
     </style>
 </head>
 <body class="text-gray-800">
 
     <!-- Tela de Login -->
     <div id="login-view" class="grid place-items-center min-h-screen p-4">
-        <div class="bg-white rounded-2xl shadow-lg border border-gray-200 w-full max-w-2xl p-8">
-            <div class="flex justify-center items-center gap-3 mb-6">
-                <!-- ÍCONE PRINCIPAL (Lupa de Pesquisa) -->
+        <!-- Card principal -->
+        <div class="bg-white rounded-2xl shadow-lg border border-gray-200 w-full max-w-md p-8">
+            <!-- Cabeçalho do Login -->
+            <div class="flex flex-col justify-center items-center gap-3 mb-6">
+                <!-- Ícone Lupa -->
                 <div class="p-3 bg-indigo-100 rounded-full">
                     <svg class="w-8 h-8 text-indigo-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                      <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
+                       <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
                     </svg>
                 </div>
                 <h1 class="text-3xl font-bold text-gray-800 text-center">Painel de P&D (v2)</h1>
             </div>
-            <p class="text-gray-600 text-center mb-8">Selecione a sua área para aceder ao painel.</p>
+            <p class="text-gray-600 text-center mb-8">Por favor, selecione sua área e digite a senha.</p>
             
-            <!-- LAYOUT DE LOGIN (CARDS SEM ÍCONES) -->
-            <div id="pd-login-buttons" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <!-- Cards de login serão inseridos aqui pelo JS -->
+            <!-- NOVO FORMULÁRIO DE LOGIN -->
+            <div class="space-y-4">
+                <div>
+                    <label for="pd-segment-select" class="block text-sm font-medium text-gray-700 mb-1">Área / Segmento</label>
+                    <select id="pd-segment-select" class="w-full border-gray-300 rounded-lg shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                        <option value="">Selecione...</option>
+                        <!-- Opções serão populadas pelo JS -->
+                    </select>
+                </div>
+                
+                <div>
+                    <label for="pd-password-input" class="block text-sm font-medium text-gray-700 mb-1">Senha</label>
+                    <input type="password" id="pd-password-input" class="w-full border-gray-300 rounded-lg shadow-sm focus:border-indigo-500 focus:ring-indigo-500" placeholder="Digite a sua senha...">
+                </div>
             </div>
             
+            <!-- Botão e Erro -->
             <div class="mt-8">
-                <input type="password" id="pd-password-input" class="w-full border-gray-300 rounded-lg shadow-sm" placeholder="Digite a sua senha...">
-                <button id="pd-login-btn" class="mt-4 w-full bg-blue-600 text-white font-bold py-3 rounded-lg hover:bg-blue-700">Entrar</button>
+                <button id="pd-login-btn" class="w-full bg-blue-600 text-white font-bold py-3 rounded-lg hover:bg-blue-700 transition-colors">Entrar</button>
                 <p id="login-error" class="text-red-500 text-sm mt-3 h-4 text-center"></p>
             </div>
         </div>
     </div>
+
 
     <!-- Tela Principal (Dashboard) -->
     <div id="dashboard" class="hidden container mx-auto p-4 md:p-8">
@@ -152,7 +148,7 @@
                              <!-- Populado por JS -->
                         </select>
                     </div>
-                    <div id="observations-feed-list" class="space-y-4 h-[32rem] overflow-y-auto bg-white p-4 rounded-2xl shadow-sm border">
+                    <div id="observations-feed-list" class="space-y-4 bg-white p-4 rounded-2xl shadow-sm border no-scrollbar">
                         <p class="text-gray-500 placeholder-observation">Nenhuma observação encontrada.</p>
                     </div>
                 </section>
@@ -161,10 +157,10 @@
                 <section>
                     <h2 class="text-2xl font-bold text-gray-900 mb-4">Post-its (Notas Internas P&D)</h2>
                     <div class="mb-4">
-                        <textarea id="post-it-input" rows="2" class="w-full border-gray-300 rounded-lg shadow-sm" placeholder="Escreva uma nota rápida..."></textarea>
+                        <textarea id="post-it-input" rows="2" class="w-full border-gray-300 rounded-lg shadow-sm" placeholder="Escreva uma nota rápida (visível apenas para si e para o Admin)..."></textarea>
                         <button id="add-post-it-btn" class="mt-2 w-full bg-amber-500 text-white font-semibold py-2 rounded-lg hover:bg-amber-600">Adicionar Post-it</button>
                     </div>
-                    <div id="post-it-list" class="space-y-3 h-[24rem] overflow-y-auto bg-gray-50 p-4 rounded-2xl shadow-sm border border-gray-200">
+                    <div id="post-it-list" class="space-y-3 bg-gray-50 p-4 rounded-2xl shadow-sm border border-gray-200 no-scrollbar">
                         <p class="text-gray-500 placeholder-postit">Nenhum post-it encontrado.</p>
                     </div>
                 </section>
@@ -201,7 +197,7 @@
                 <h3 id="feedback-samples-title" class="text-xl font-bold">Amostras</h3>
                 <button id="close-feedback-samples-btn" class="text-2xl font-bold text-gray-500 hover:text-gray-800">&times;</button>
             </div>
-            <div id="feedback-samples-list" class="space-y-3 max-h-[70vh] overflow-y-auto pr-2">
+            <div id="feedback-samples-list" class="space-y-3 pr-2 no-scrollbar">
                 <p class="text-gray-500">A carregar detalhes...</p>
             </div>
         </div>
@@ -240,7 +236,7 @@
             </div>
             <div class="space-y-4">
                   <div>
-                       <label for="postit-message-input" class="block text-sm font-medium text-gray-700">Nota Interna P&D</label>
+                       <label for="postit-message-input" class="block text-sm font-medium text-gray-700">Nota Interna P&D (Visível apenas para si e Admin)</label>
                        <textarea id="postit-message-input" rows="3" class="mt-1 w-full border-gray-300 rounded-lg shadow-sm" placeholder="Digite a nota..."></textarea>
                   </div>
             </div>
@@ -258,8 +254,8 @@
                 <h3 class="text-xl font-bold">Respostas (Vendedores/Gerentes)</h3>
                 <button id="close-notification-btn" class="text-2xl font-bold text-gray-500 hover:text-gray-800">&times;</button>
             </div>
-            <div id="notification-list" class="space-y-4 max-h-[60vh] overflow-y-auto pr-2">
-                <p class="text-gray-500">Nenhuma resposta nova.</p>
+            <div id="notification-list" class="space-y-4 max-h-[60vh] overflow-y-auto pr-2 no-scrollbar">
+                <p class="text-gray-500">Nenhuma resposta recebida.</p>
             </div>
         </div>
     </div>
@@ -302,33 +298,21 @@
 
         // Definições de Acesso
         const PD_PASSWORDS = {
-            'Panificação': { name: 'Adriana', pass: 'pd_adriana5' },
-            'Cárneos': { name: 'Anderson', pass: 'pd_anderson3' },
-            'Aromas Doces, Salgados e Molhos': { name: 'Carlos', pass: 'pd_carlos1' },
-            'Nutracêuticos': { name: 'Daise', pass: 'pd_daise4' },
-            'Lácteos': { name: 'Flavia', pass: 'pd_flavia2' },
-            'Sorvetes': { name: 'Margarida', pass: 'pd_margarida7' },
-            'Nutrição Animal': { name: 'Rebeca', pass: 'pd_rebeca6' },
-            'ADMIN': { name: 'Admin', pass: 'admin123' } // Senha de Admin
+            'Panificação': { name: 'Adriana', pass: 'pd_adriana5', prefixes: ['DPAN'] },
+            'Cárneos': { name: 'Anderson', pass: 'pd_anderson3', prefixes: ['DES'] }, // Assumindo DES para Cárneos
+            'Aromas Doces, Salgados e Molhos': { name: 'Carlos', pass: 'pd_carlos1', prefixes: ['DES'] }, // Assumindo DES
+            'Nutracêuticos': { name: 'Daise', pass: 'pd_daise4', prefixes: ['DMIX'] },
+            'Lácteos': { name: 'Flavia', pass: 'pd_flavia2', prefixes: ['DLA', 'DLS'] },
+            'Sorvetes': { name: 'Margarida', pass: 'pd_margarida7', prefixes: ['DSO'] },
+            'Nutrição Animal': { name: 'Rebeca', pass: 'pd_rebeca6', prefixes: ['DNA'] },
+            'ADMIN': { name: 'Admin', pass: 'admin123', prefixes: [] } // Admin vê tudo
         };
-
-        // *** NOVO: MAPEAMENTO DE FILTRO DE PRODUTO P&D ***
-        const PD_PRODUCT_PREFIX_MAP = {
-            'Panificação': ['DPAN'], // Adriana
-            'Cárneos': ['DES'], // Anderson
-            'Aromas Doces, Salgados e Molhos': ['DES'], // Carlos
-            'Nutracêuticos': ['DMIX'], // Daise
-            'Lácteos': ['DLA', 'DLS'], // Flavia
-            'Sorvetes': ['DSO'], // Margarida
-            'Nutrição Animal': ['DNA'], // Rebeca
-            'ADMIN': null // Admin vê tudo
-        };
-        
         const PENDING_STATUSES = ['EM ANÁLISE', 'AMOSTRA SEM FEEDBACK', 'SEM RETORNO DO CLIENTE', 'AMOSTRA NÃO TESTADA', 'PENDENTE'];
         
         // --- Elementos DOM ---
         const loginView = document.getElementById('login-view');
-        const pdLoginButtons = document.getElementById('pd-login-buttons');
+        // ALTERADO: de pdLoginButtons para pdSegmentSelect
+        const pdSegmentSelect = document.getElementById('pd-segment-select');
         const pdPasswordInput = document.getElementById('pd-password-input');
         const pdLoginBtn = document.getElementById('pd-login-btn');
         const loginError = document.getElementById('login-error');
@@ -367,6 +351,7 @@
         const notificationModal = document.getElementById('notification-modal');
         const notificationList = document.getElementById('notification-list');
         const closeNotificationBtn = document.getElementById('close-notification-btn');
+        let notificationBtn = null; // Definido dinamicamente
         const customAlert = document.getElementById('custom-alert');
         const customAlertTitle = document.getElementById('custom-alert-title');
         const customAlertMessage = document.getElementById('custom-alert-message');
@@ -374,22 +359,21 @@
 
         // --- Estado Global ---
         let currentSessionId = null;
-        let currentSegment = null; // Segmento do P&D logado
-        let currentPdName = null; // Nome do P&D logado
-        let allCurrentSamples = []; // Armazena TODAS as amostras carregadas (já filtradas)
+        let currentSegment = null; // Segmento de P&D logado
+        let currentPdManagerName = null; // Nome do P&D logado
+        let currentPrefixes = []; // Prefixos do P&D logado
+        let allCurrentSamples = []; // Armazena TODAS as amostras carregadas
         let sellerSegmentsCache = {}; // Cache de segmentos de vendedores
-        let managerRepliesListenerUnsubscribe = null; // Respostas dos gestores
         let sellerRepliesListenerUnsubscribe = null; // Respostas dos vendedores
-        let pdPostitsListenerUnsubscribe = null; // Notas internas P&D
-        let destaquesListenerUnsubscribe = null; // Amostras destacadas
+        let managerRepliesListenerUnsubscribe = null; // Respostas dos gerentes (para P&D)
+        let pdPostitsListenerUnsubscribe = null; // Notas P&D (para feed)
         let dataListenersUnsubscribe = [];
         let chartInstances = {};
         let currentSampleForReply = null;
-        let currentSampleForPostIt = null;
-        let allManagerReplies = [];
-        let allSellerReplies = [];
-        let allPdPostits = [];
-        let highlightedSamplesCache = [];
+        let currentSampleForPostit = null;
+        let allSellerReplies = []; // Respostas dos vendedores para o gerente
+        let allManagerReplies = []; // Respostas dos gerentes para os vendedores (para o feed)
+        let allPdPostits = []; // Post-its do P&D (para o feed)
         
         // Classe de Gestão de Carga
         class DataLoadManager {
@@ -411,7 +395,6 @@
 
                 if (this.loadedItems === this.totalItems && !this.hasCompleted) {
                     this.hasCompleted = true;
-                    // Passa TODOS os dados para a função de callback
                     this.onComplete(this.allData);
                 }
             }
@@ -441,91 +424,60 @@
             } else if (error.code === 'permission-denied') {
                 message = "Permissão negada. Verifique as regras de segurança do Firebase.";
             }
-            // Chama showAlert com todos os argumentos
             showAlert(message, title, color);
         }
 
         // --- Lógica de Carregamento de Dados (v2) ---
         
-        // Define as funções de listener ANTES de loadAllData
+        // CORREÇÃO: Funções de listener definidas ANTES de serem chamadas
         function listenForManagerReplies(sessionId) {
             if (managerRepliesListenerUnsubscribe) managerRepliesListenerUnsubscribe();
             const q = query(collection(db, "sessoes", sessionId, "notificacoesVendedor"));
             
             managerRepliesListenerUnsubscribe = onSnapshot(q, (snapshot) => {
                  allManagerReplies = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                 renderNotificationBell();
                  if (!dashboardContent.classList.contains('hidden')) {
                      renderObservationsFeed(allCurrentSamples);
                  }
-            }, (error) => handleFirestoreError(error, "ouvir respostas dos gestores"));
+            }, (error) => handleFirestoreError(error, "ouvir respostas dos gestores (feed)"));
         }
         
-        function listenForSellerReplies(sessionId) {
-            if (sellerRepliesListenerUnsubscribe) sellerRepliesListenerUnsubscribe();
+        function listenForSellerRepliesFeed(sessionId) {
             const q = query(collection(db, "sessoes", sessionId, "respostasVendedor"));
             
-            sellerRepliesListenerUnsubscribe = onSnapshot(q, (snapshot) => {
+            const unsub = onSnapshot(q, (snapshot) => {
                  allSellerReplies = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                 renderNotificationBell();
                  if (!dashboardContent.classList.contains('hidden')) {
                      renderObservationsFeed(allCurrentSamples);
                  }
-            }, (error) => handleFirestoreError(error, "ouvir respostas dos vendedores"));
+            }, (error) => handleFirestoreError(error, "ouvir respostas dos vendedores (feed)"));
+            dataListenersUnsubscribe.push(unsub);
         }
 
         function listenForPdPostits(sessionId) {
             if (pdPostitsListenerUnsubscribe) pdPostitsListenerUnsubscribe();
+            const q = query(collection(db, "sessoes", sessionId, "pdPostits"));
             
-            const q = query(
-                collection(db, "sessoes", sessionId, "pdPostits"),
-                orderBy("timestamp", "desc")
-            );
-
             pdPostitsListenerUnsubscribe = onSnapshot(q, (snapshot) => {
                  allPdPostits = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                 // Re-renderiza o feed
                  if (!dashboardContent.classList.contains('hidden')) {
-                     renderPdPostits();
+                     renderPostItList(allPdPostits); 
                  }
-            }, (error) => {
-                 handleFirestoreError(error, "ouvir post-its");
-                 allPdPostits = [];
-                 if (!dashboardContent.classList.contains('hidden')) {
-                     renderPdPostits();
-                 }
-            });
+            }, (error) => handleFirestoreError(error, "ouvir post-its P&D (feed)"));
         }
 
-        function listenForDestaques(sessionId) {
-            if (destaquesListenerUnsubscribe) destaquesListenerUnsubscribe();
+        function listenForSellerReplies(sessionId) {
+            if (sellerRepliesListenerUnsubscribe) sellerRepliesListenerUnsubscribe();
+            const q = query(
+                collection(db, "sessoes", sessionId, "respostasVendedor"),
+                where("readByPd", "==", false)
+            );
             
-            const destaquesRef = doc(db, "sessoes", sessionId, "configuracoes", "destaquesAmostras");
-            
-            destaquesListenerUnsubscribe = onSnapshot(destaquesRef, (docSnap) => {
-                 highlightedSamplesCache = docSnap.exists() ? (docSnap.data().lista || []) : [];
-                 // Re-renderiza o feed
-                 if (!dashboardContent.classList.contains('hidden')) {
-                     renderObservationsFeed(allCurrentSamples);
-                 }
-                 if (!feedbackSamplesModal.classList.contains('hidden')) {
-                     // Atualiza o modal de pesquisa se estiver aberto
-                     const searchTerm = normalizeText(globalSearchInput.value);
-                     const filteredSamples = allCurrentSamples.filter(s => 
-                        normalizeText(s.sellerName).includes(searchTerm) ||
-                        normalizeText(s.produto).includes(searchTerm) ||
-                        normalizeText(s.descricao).includes(searchTerm) ||
-                        normalizeText(s.razaoSocial).includes(searchTerm) ||
-                        (s.observation && normalizeText(s.observation).includes(searchTerm)) ||
-                        normalizeText(s.pedido).includes(searchTerm)
-                     ).sort((a, b) => (b.lastUpdate?.toDate ? b.lastUpdate.toDate().getTime() : 0) - (a.lastUpdate?.toDate ? a.lastUpdate.toDate().getTime() : 0));
-                     openGlobalSearchModal(filteredSamples);
-                 }
-                 
-            }, (error) => {
-                 handleFirestoreError(error, "ouvir destaques");
-            });
+            sellerRepliesListenerUnsubscribe = onSnapshot(q, (snapshot) => {
+                 renderNotificationBell(snapshot.docs.length);
+            }, (error) => handleFirestoreError(error, "ouvir respostas de vendedores (notificação)"));
         }
+
         
         async function getActiveSessionId() {
             try {
@@ -550,10 +502,7 @@
                     sellerSegmentsCache[doc.id] = doc.data().segmento;
                 });
                 console.log("Cache de segmentos carregado:", sellerSegmentsCache);
-                
-                // Popular o filtro de segmento do feed
-                populateSegmentFilter();
-                
+                populateSegmentFilters(); // Popula os filtros de segmento
             } catch (error) {
                 handleFirestoreError(error, "carregar segmentos de vendedores");
             }
@@ -571,16 +520,17 @@
             currentSessionId = sessionId;
             allCurrentSamples = [];
 
-            // 1. Carrega os segmentos primeiro
+            // 1. Carrega os segmentos
             await loadSellerSegments();
 
-            // 2. Ouve todas as threads de comunicação e notas
-            listenForManagerReplies(sessionId);
+            // 2. Ouve as notificações (Sino)
             listenForSellerReplies(sessionId);
+            // 3. Ouve as threads de comunicação (Feed)
+            listenForManagerReplies(sessionId);
+            listenForSellerRepliesFeed(sessionId);
             listenForPdPostits(sessionId);
-            listenForDestaques(sessionId);
 
-            // 3. Busca todos os vendedores da sessão
+            // 4. Busca todos os vendedores da sessão
             const sellersQuery = query(collection(db, "sessoes", sessionId, "vendedores"));
             const sellersSnapshot = await getDocs(sellersQuery);
             const sellerDocs = sellersSnapshot.docs;
@@ -593,26 +543,22 @@
                  return;
             }
 
-            // 4. Usa o DataLoadManager para carregar as sub-coleções
+            // 5. Usa o DataLoadManager para carregar as sub-coleções
             const loadManager = new DataLoadManager(sellerDocs.length, (allSamples) => {
                 
-                // --- INÍCIO DA CORREÇÃO: FILTRO P&D ---
-                const prefixes = PD_PRODUCT_PREFIX_MAP[currentSegment]; // Pega os prefixos do segmento logado
-                
+                // --- FILTRO DE P&D (v2) ---
                 let filteredSamples;
-                if (prefixes === null) { // ADMIN (null) vê tudo
-                    filteredSamples = allSamples;
+                if (currentSegment === 'ADMIN') {
+                    filteredSamples = allSamples; // Admin vê tudo
                 } else {
-                    // Filtra as amostras
+                    // P&D vê amostras com base no prefixo do produto
                     filteredSamples = allSamples.filter(sample => {
-                        if (!sample.produto) return false; // Ignora amostras sem código de produto
-                        const normalizedProduto = normalizeText(sample.produto);
-                        
-                        // Verifica se o código do produto começa com algum dos prefixos
-                        return prefixes.some(prefix => normalizedProduto.startsWith(prefix));
+                        const productCode = normalizeText(sample.produto);
+                        // Verifica se o código do produto começa com algum dos prefixos do P&D
+                        return currentPrefixes.some(prefix => productCode.startsWith(prefix));
                     });
                 }
-                // --- FIM DA CORREÇÃO ---
+                // --- FIM DO FILTRO ---
 
                 allCurrentSamples = filteredSamples; // Armazena SOMENTE as amostras filtradas
                 processAndDisplayDashboard(allCurrentSamples); // Passa somente as amostras filtradas
@@ -623,7 +569,7 @@
             
             loadingMessage.textContent = `A preparar para carregar ${sellerDocs.length} vendedores...`;
 
-            // 5. Ouve as 'amostras' de cada vendedor
+            // 6. Ouve as 'amostras' de cada vendedor
             sellerDocs.forEach(sellerDoc => {
                 const sellerData = sellerDoc.data();
                 const samplesQuery = query(
@@ -647,53 +593,41 @@
 
         // --- Lógica de Login ---
         
-        // NOVO: `populatePdButtons` com cards (sem ícones individuais)
-        function populatePdButtons() {
-            pdLoginButtons.innerHTML = '';
+        // ALTERADO: de populatePdButtons para populatePdLoginSelect
+        function populatePdLoginSelect() {
+            pdSegmentSelect.innerHTML = '<option value="">Selecione...</option>';
 
             Object.entries(PD_PASSWORDS).forEach(([segment, data]) => {
-                const card = document.createElement('button');
-                card.className = "login-card";
-                card.dataset.segment = segment;
-                
-                // HTML sem o span do ícone
-                card.innerHTML = `
-                    <div>
-                        <p>${segment}</p>
-                        <span class="login-card-name">${data.name}</span>
-                    </div>
-                    <svg class="w-5 h-5 opacity-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                        <path fill-rule="evenodd" d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16Zm3.857-9.809a.75.75 0 0 0-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 1 0-1.06 1.061l2.5 2.5a.75.75 0 0 0 1.137-.089l4-5.5Z" clip-rule="evenodd" />
-                    </svg>
-                `;
-                
-                card.addEventListener('click', () => {
-                    pdLoginButtons.querySelectorAll('.login-card').forEach(c => {
-                        c.classList.remove('selected');
-                        c.querySelector('svg:last-child').classList.add('opacity-0');
-                    });
-                    card.classList.add('selected');
-                    card.querySelector('svg:last-child').classList.remove('opacity-0');
-                    currentSegment = segment;
-                    currentPdName = data.name; // Guarda o nome do responsável
-                });
-                pdLoginButtons.appendChild(card);
+                const option = document.createElement('option');
+                option.value = segment;
+                option.textContent = `${segment} (${data.name})`;
+                pdSegmentSelect.appendChild(option);
             });
         }
 
         async function login() {
+            // ALTERADO: Lê o segmento do select
+            const selectedSegment = pdSegmentSelect.value;
             const password = pdPasswordInput.value;
-            if (!currentSegment) {
+            
+            if (!selectedSegment) {
                 loginError.textContent = 'Por favor, selecione a sua área.';
                 return;
             }
             
-            if (PD_PASSWORDS[currentSegment].pass === password) {
+            // Pega os dados do segmento selecionado
+            const segmentData = PD_PASSWORDS[selectedSegment];
+
+            if (segmentData && segmentData.pass === password) {
                 loginError.textContent = '';
                 pdLoginBtn.disabled = true;
                 pdLoginBtn.textContent = 'A carregar...';
 
-                // Salva o segmento/nome no localStorage para reconexão (opcional)
+                // Define o estado global
+                currentSegment = selectedSegment;
+                currentPdManagerName = segmentData.name;
+                currentPrefixes = segmentData.prefixes;
+                
                 localStorage.setItem('pdSegment', currentSegment); 
                 
                 const sessionId = await getActiveSessionId();
@@ -713,7 +647,7 @@
                 await loadAllData(sessionId);
 
             } else {
-                loginError.textContent = 'Senha incorreta.';
+                loginError.textContent = 'Senha ou área incorreta.';
             }
         }
         
@@ -721,29 +655,25 @@
             localStorage.removeItem('pdSegment');
             currentSessionId = null;
             currentSegment = null;
-            currentPdName = null;
+            currentPdManagerName = null;
+            currentPrefixes = [];
             allCurrentSamples = [];
             allManagerReplies = [];
             allSellerReplies = [];
             allPdPostits = [];
-            highlightedSamplesCache = [];
             dataListenersUnsubscribe.forEach(unsub => unsub());
             dataListenersUnsubscribe = [];
-            if(managerRepliesListenerUnsubscribe) managerRepliesListenerUnsubscribe();
             if(sellerRepliesListenerUnsubscribe) sellerRepliesListenerUnsubscribe();
+            if(managerRepliesListenerUnsubscribe) managerRepliesListenerUnsubscribe();
             if(pdPostitsListenerUnsubscribe) pdPostitsListenerUnsubscribe();
-            if(destaquesListenerUnsubscribe) destaquesListenerUnsubscribe();
             
             dashboard.classList.add('hidden');
             loginView.classList.remove('hidden');
             pdPasswordInput.value = '';
+            pdSegmentSelect.value = ''; // Reseta o dropdown
             pdLoginBtn.disabled = false;
             pdLoginBtn.textContent = 'Entrar';
             adminAccessSection.classList.add('hidden');
-            pdLoginButtons.querySelectorAll('.login-card').forEach(c => {
-                 c.classList.remove('selected');
-                 c.querySelector('svg:last-child').classList.add('opacity-0');
-            });
             
             // Remove o sino
             document.getElementById('notification-btn')?.parentElement.remove();
@@ -754,18 +684,19 @@
             if (!samples) return;
             renderCharts(samples);
             renderObservationsFeed(samples);
-            renderPdPostits(); // Renderiza os post-its
+            renderPostItList(allPdPostits); 
         }
-        
-        function populateSegmentFilter() {
-            const segments = new Set(Object.values(sellerSegmentsCache).filter(Boolean));
-            observationSegmentFilter.innerHTML = '<option value="">Todos os Segmentos</option>';
-            Array.from(segments).sort().forEach(segment => {
-                const option = document.createElement('option');
-                option.value = segment;
-                option.textContent = segment;
-                observationSegmentFilter.appendChild(option);
-            });
+
+        function populateSegmentFilters() {
+             const currentSegments = [...new Set(Object.values(sellerSegmentsCache).filter(Boolean))].sort();
+             observationSegmentFilter.innerHTML = '<option value="">Todos os Segmentos</option>';
+             
+             currentSegments.forEach(segment => {
+                 const option = document.createElement('option');
+                 option.value = segment;
+                 option.textContent = segment;
+                 observationSegmentFilter.appendChild(option);
+             });
         }
 
         function renderCharts(samples) {
@@ -786,7 +717,6 @@
                 }
             });
 
-            // CORREÇÃO: Mudar título do gráfico se não for admin
             const statusTitle = document.querySelector('#segment-status-chart').closest('.bg-white').querySelector('h3');
             if (currentSegment !== 'ADMIN') {
                  statusTitle.textContent = "Status (Amostras do Segmento)";
@@ -834,21 +764,20 @@
             });
         }
         
-        // Feed de Observações
+        // Feed de Observações (Melhorado)
         function renderObservationsFeed(samples) {
-            const segmentFilter = observationSegmentFilter.value;
             const globalSearch = normalizeText(globalSearchInput.value);
+            const segmentFilter = observationSegmentFilter.value;
             
             const filteredSamples = samples.filter(s => {
                 if (!s.observation) return false;
                 
-                // Filtro de Segmento (do VENDEDOR)
-                if (segmentFilter) {
-                     const sellerSegment = sellerSegmentsCache[normalizeText(s.sellerName)];
-                     if(sellerSegment !== segmentFilter) return false;
+                // Filtro de Segmento (do Vendedor)
+                if(segmentFilter && sellerSegmentsCache[normalizeText(s.sellerName)] !== segmentFilter) {
+                    return false;
                 }
                 
-                // Filtro de Pesquisa Global (se houver)
+                // Filtro de Pesquisa Global
                 if (globalSearch) {
                     return (
                         normalizeText(s.sellerName).includes(globalSearch) ||
@@ -859,22 +788,20 @@
                         normalizeText(s.pedido).includes(globalSearch)
                     );
                 }
-                
-                return true; // Passou em tudo
+                return true;
                 
             }).sort((a, b) => (b.lastUpdate?.toDate ? b.lastUpdate.toDate().getTime() : 0) - (a.lastUpdate?.toDate ? a.lastUpdate.toDate().getTime() : 0));
             
             observationsFeedList.innerHTML = '';
             if (filteredSamples.length === 0) {
                  const msg = globalSearch ? 'Nenhum resultado para a pesquisa.' : 'Nenhuma observação encontrada.';
-                 observationsFeedList.innerHTML = `<p class="text-gray-500 placeholder-observation">${msg}</p>`;
+                 observationsFeedList.innerHTML = `<p class="text-gray-500 placeholder-observation p-4">${msg}</p>`;
                  return;
             }
             
             filteredSamples.forEach(sample => {
                  const card = document.createElement('div');
-                 const isHighlighted = highlightedSamplesCache.includes(sample.id);
-                 card.className = `p-4 rounded-lg border ${isHighlighted ? 'bg-amber-50 border-amber-200' : 'bg-white'}`;
+                 card.className = "p-4 border-b border-gray-100 last:border-b-0";
                  const time = sample.lastUpdate?.toDate() ? sample.lastUpdate.toDate().toLocaleString('pt-BR') : 'data inválida';
                  
                  // --- Lógica da Thread de Comunicação ---
@@ -890,15 +817,16 @@
                      `;
                  }
                  
-                 // 2. Resposta do Gestor
+                 // 2. Resposta do Gestor (incluindo P&D)
                  const managerReply = allManagerReplies
                     .filter(r => r.sellerName === sample.sellerName && r.pedido === sample.pedido && r.produto === sample.produto && r.originalObservation === sample.observation)
                     .sort((a, b) => (b.timestamp?.toDate() ?? 0) - (a.timestamp?.toDate() ?? 0))[0];
                  
                  if (managerReply) {
+                     const isPD = managerReply.managerName.includes('P&D');
                      repliesHtml += `
-                         <div class="manager-reply">
-                             <p><strong>${managerReply.managerName} (Gerente) respondeu:</strong> ${managerReply.replyMessage}</p>
+                         <div class="${isPD ? 'pd-note' : 'manager-reply'}">
+                             <p><strong>${managerReply.managerName} respondeu:</strong> ${managerReply.replyMessage}</p>
                          </div>
                      `;
                      
@@ -917,21 +845,12 @@
                  }
                  // --- Fim da Lógica da Thread ---
                  
-                 // Ícone de Destaque (Estrela)
-                 const starIcon = isHighlighted ?
-                     `<svg class="w-5 h-5 text-amber-500" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588 1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>` :
-                     `<svg class="w-5 h-5 text-gray-400 hover:text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.524 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.524 4.674c.3.921-.755 1.688-1.54 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.784.57-1.838-.197-1.539-1.118l1.524-4.674a1 1 0 00-.363-1.118L2.98 10.1c-.783-.57-.38-1.81.588 1.81h4.914a1 1 0 00.951-.69l1.524-4.674z"></path></svg>`;
-
                  card.innerHTML = `
-                    <div class="flex justify-between items-start">
-                        <div class="mb-2">
-                            <p class="font-bold text-gray-800">${sample.produto}</p>
-                            <p class="text-sm text-gray-600">${sample.descricao || 'Sem descrição'}</p>
-                            <p class="text-xs text-gray-500">${sample.razaoSocial || 'Cliente N/A'}</p>
-                        </div>
-                        <button class="highlight-sample-btn p-1 rounded-full hover:bg-gray-100" data-sample-id="${sample.id}" title="Destacar Amostra">
-                            ${starIcon}
-                        </button>
+                    <div class="mb-2">
+                        <p class="font-bold text-gray-800">${sample.produto}</p>
+                        <!-- NOVO: Descrição e Faturamento -->
+                        <p class="text-sm text-gray-600">${sample.descricao || 'Sem descrição'}</p>
+                        <p class="text-xs text-gray-500">${sample.razaoSocial || 'Cliente N/A'} | Fat.: ${sample.emissaoNF || 'N/A'}</p>
                     </div>
                     <p class="text-gray-700 mb-3 italic">"${sample.observation}"</p>
                     
@@ -940,13 +859,13 @@
                     <div class="flex justify-between items-end text-xs text-gray-500 mt-3 pt-3 border-t">
                          <div>
                              <p>- ${sample.sellerName} (Pedido: ${sample.pedido})</p>
-                             <p class="text-gray-400">Fat.: ${sample.emissaoNF || 'N/A'} | Obs.: ${time}</p>
+                             <p class="text-gray-400">Obs.: ${time}</p>
                          </div>
                          <div class="flex gap-2">
-                             <button class="add-postit-modal-btn bg-amber-100 text-amber-800 hover:bg-amber-200 px-2 py-1 rounded text-xs font-semibold" data-sample-id="${sample.id}">
-                                 ${pdNote ? 'Editar Nota' : 'Adicionar Nota'}
-                             </button>
-                             <button class="pd-reply-btn bg-blue-100 text-blue-700 hover:bg-blue-200 px-2 py-1 rounded text-xs font-semibold" data-sample-id="${sample.id}">
+                            <button class="postit-btn bg-amber-100 text-amber-700 hover:bg-amber-200 px-2 py-1 rounded text-xs font-semibold" data-sample-id="${sample.id}">
+                                Adicionar Nota
+                            </button>
+                             <button class="reply-btn bg-blue-100 text-blue-700 hover:bg-blue-200 px-2 py-1 rounded text-xs font-semibold" data-sample-id="${sample.id}">
                                  Responder
                              </button>
                          </div>
@@ -956,82 +875,94 @@
             });
             
             // Listeners
-            observationsFeedList.querySelectorAll('.pd-reply-btn').forEach(btn => {
+            observationsFeedList.querySelectorAll('.reply-btn').forEach(btn => {
                  btn.addEventListener('click', openPdReplyModal);
             });
-            observationsFeedList.querySelectorAll('.add-postit-modal-btn').forEach(btn => {
-                 btn.addEventListener('click', openPostItModal);
-            });
-            observationsFeedList.querySelectorAll('.highlight-sample-btn').forEach(btn => {
-                 btn.addEventListener('click', toggleDestaqueAmostra);
+            observationsFeedList.querySelectorAll('.postit-btn').forEach(btn => {
+                 btn.addEventListener('click', openPostitModal);
             });
         }
         
-        // Feed de Post-its
-        function renderPdPostits() {
-            const globalSearch = normalizeText(globalSearchInput.value);
-            
-            // CORREÇÃO: Os post-its não devem ser filtrados por prefixo,
-            // mas sim pela busca global. A lista 'allPdPostits' já é filtrada
-            // no listener (se necessário) ou podemos filtrar aqui.
-            // O listener já carrega todos, então filtramos aqui.
-            
-            const filteredNotes = allPdPostits.filter(note => {
-                
-                // 1. Filtro de Segmento P&D (se não for Admin)
-                if (currentSegment !== 'ADMIN') {
-                    // Tenta encontrar uma amostra correspondente em 'allCurrentSamples' (que já está filtrada)
-                    if (note.contextId) {
-                        if (!allCurrentSamples.find(s => s.id === note.contextId)) {
-                             return false; // Nota é de uma amostra que não pertence a este P&D
-                        }
-                    }
-                    // TODO: Poderíamos adicionar um filtro para notas gerais se tivessem um segmento
-                }
-                
-                // 2. Filtro de Pesquisa Global
-                if (globalSearch) {
-                     return (
-                         normalizeText(note.message).includes(globalSearch) ||
-                         normalizeText(note.context).includes(globalSearch) ||
-                         normalizeText(note.pedido).includes(globalSearch) ||
-                         normalizeText(note.pdManagerName).includes(globalSearch)
-                     );
-                }
-                return true;
-            }).sort((a, b) => (b.timestamp?.toDate() ?? 0) - (a.timestamp?.toDate() ?? 0));
-            
+        // Lista de Post-its
+        function renderPostItList(postits) {
             postItList.innerHTML = '';
-            if (filteredNotes.length === 0) {
-                 const msg = globalSearch ? 'Nenhum post-it encontrado na pesquisa.' : 'Nenhum post-it encontrado.';
-                 postItList.innerHTML = `<p class="text-gray-500 placeholder-postit">${msg}</p>`;
+            
+            // NOVO: Filtra post-its por segmento
+            const filteredPostits = postits.filter(note => {
+                if (currentSegment === 'ADMIN') return true; // Admin vê tudo
+                return note.segment === currentSegment; // Outros veem apenas os seus
+            }).sort((a, b) => (b.timestamp?.toDate ? b.timestamp.toDate().getTime() : 0) - (a.timestamp?.toDate ? a.timestamp.toDate().getTime() : 0));
+            
+            if (filteredPostits.length === 0) {
+                 postItList.innerHTML = `<p class="text-gray-500 placeholder-postit">Nenhum post-it encontrado.</p>`;
                  return;
             }
             
-            filteredNotes.forEach(note => {
-                const card = document.createElement('div');
-                card.className = "p-3 rounded-lg bg-amber-50 border border-amber-200 shadow-sm";
-                const time = note.timestamp?.toDate() ? note.timestamp.toDate().toLocaleString('pt-BR') : '';
-
-                card.innerHTML = `
+            filteredPostits.forEach(note => {
+                 const card = document.createElement('div');
+                 card.className = 'p-3 rounded-lg border bg-white shadow-sm';
+                 const time = note.timestamp?.toDate() ? note.timestamp.toDate().toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }) : '';
+                 
+                 card.innerHTML = `
                     <p class="text-sm text-gray-800">${note.message}</p>
-                    <div class="mt-2 pt-2 border-t border-amber-200">
-                        <!-- Contexto (Vendedor/Produto) -->
-                        <p class="text-xs text-gray-600">${note.context || 'Nota geral'}</p>
-                        <!-- Pedido e Faturamento (se houver) -->
-                        ${note.pedido ? `<p class="text-xs text-gray-500">Pedido: ${note.pedido} | Fat.: ${note.dataFaturamento || 'N/A'}</p>` : ''}
-                    </div>
+                    ${note.context ? `<p class="text-xs text-gray-500 mt-2 pt-2 border-t">Ref: ${note.context}</p>` : ''}
                     <div class="flex justify-between items-center mt-2 text-xs">
-                        <span class="font-semibold text-amber-800">${note.pdManagerName}</span>
-                        <div>
-                            <button class="delete-post-it-btn text-gray-400 hover:text-red-500 font-medium" data-note-id="${note.id}">Excluir</button>
-                            <span class="text-gray-400 ml-2">${time}</span>
+                        <span class="font-semibold ${note.segment ? 'text-purple-700' : 'text-gray-600'}">${note.pdManagerName}</span>
+                        <div class="flex items-center gap-2">
+                             <span class="text-gray-400">${time}</span>
+                             <button class="delete-post-it-btn text-gray-400 hover:text-red-500" data-id="${note.id}" title="Excluir">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                             </button>
                         </div>
                     </div>
-                `;
-                postItList.appendChild(card);
+                 `;
+                 postItList.appendChild(card);
             });
         }
+
+        async function addPostItFromInput() {
+             const message = postItInput.value.trim();
+             if (!message) return;
+             
+             addPostItBtn.disabled = true;
+             
+             try {
+                const postItData = {
+                    message,
+                    pdManagerName: currentPdManagerName,
+                    segment: currentSegment, // NOVO: Etiqueta o segmento
+                    context: "Nota Geral",
+                    contextId: null,
+                    timestamp: serverTimestamp()
+                };
+                await addDoc(collection(db, "sessoes", currentSessionId, "pdPostits"), postItData);
+                postItInput.value = '';
+             } catch(error) {
+                 handleFirestoreError(error, "adicionar post-it geral");
+             } finally {
+                 addPostItBtn.disabled = false;
+             }
+        }
+        
+        async function deletePostIt(e) {
+             const id = e.currentTarget.dataset.id;
+             if (!id) return;
+             
+             // Simples confirmação, idealmente usar um modal
+             if (!confirm("Tem a certeza que quer excluir esta nota?")) return;
+             
+             e.currentTarget.disabled = true;
+             
+             try {
+                const docRef = doc(db, "sessoes", currentSessionId, "pdPostits", id);
+                await deleteDoc(docRef);
+             } catch(error) {
+                 handleFirestoreError(error, "excluir post-it");
+                 e.currentTarget.disabled = false;
+             }
+             // Listener atualiza a UI
+        }
+
         
         function renderAccessTable() {
              pdAccessTbody.innerHTML = '';
@@ -1063,12 +994,24 @@
              pdReplyMessageInput.value = '';
              pdReplyModal.classList.remove('hidden');
         }
+        
+        function openPostitModal(e) {
+             const sampleId = e.currentTarget.dataset.sampleId;
+             currentSampleForPostit = allCurrentSamples.find(s => s.id === sampleId);
+             if (!currentSampleForPostit) return showAlert("Erro: Amostra não encontrada.");
+             
+             postitModalContext.textContent = `Ref: ${currentSampleForPostit.produto} (${currentSampleForPostit.pedido})`;
+             postitModalDescription.textContent = currentSampleForPostit.descricao || 'Sem descrição';
+             postitModalObservation.textContent = `"${currentSampleForPostit.observation}"`;
+             postitMessageInput.value = '';
+             postitModal.classList.remove('hidden');
+        }
 
-        async function sendReplyToPd() {
+        async function sendPdReply() {
             if (!currentSampleForReply || !currentSessionId) return;
             
             const replyMessage = pdReplyMessageInput.value.trim();
-            if (!replyMessage || !currentPdName) {
+            if (!replyMessage || !currentPdManagerName) {
                 return showAlert("A mensagem de resposta não pode estar vazia.");
             }
 
@@ -1076,9 +1019,9 @@
             sendPdReplyBtn.textContent = 'A Enviar...';
 
             try {
-                // P&D usa a mesma coleção 'notificacoesVendedor', mas com nome P&D
+                // P&D envia para a coleção 'notificacoesVendedor'
                 const notificationData = {
-                    managerName: `P&D (${currentPdName})`, // Identifica como P&D
+                    managerName: `${currentPdManagerName} (P&D)`, // Identifica que é do P&D
                     replyMessage: replyMessage,
                     originalObservation: currentSampleForReply.observation,
                     sellerName: currentSampleForReply.sellerName,
@@ -1088,7 +1031,7 @@
                     descricao: currentSampleForReply.descricao || '',
                     timestamp: serverTimestamp(),
                     read: false,
-                    readByPd: false // NOVO: Flag para P&D
+                    readByPd: true // O P&D "leu" ao enviar
                 };
 
                 const sellerNotifsRef = collection(db, "sessoes", currentSessionId, "notificacoesVendedor");
@@ -1098,7 +1041,7 @@
                 showAlert("Resposta enviada com sucesso.", "Sucesso", "text-green-600");
                 
             } catch (error) {
-                handleFirestoreError(error, "enviar resposta P&D");
+                handleFirestoreError(error, "enviar resposta P&D ao vendedor");
             } finally {
                 sendPdReplyBtn.disabled = false;
                 sendPdReplyBtn.textContent = 'Enviar Resposta';
@@ -1106,157 +1049,47 @@
             }
         }
         
-        // --- Lógica de Post-it ---
-        
-        function openPostItModal(e) {
-             const sampleId = e.currentTarget.dataset.sampleId;
-             currentSampleForPostIt = allCurrentSamples.find(s => s.id === sampleId);
-             if (!currentSampleForPostIt) return showAlert("Erro: Amostra não encontrada.");
-             
-             const existingNote = allPdPostits.find(p => p.contextId === sampleId);
-             
-             postitModalContext.textContent = `Ref: ${currentSampleForPostIt.produto} (Vendedor: ${currentSampleForPostIt.sellerName})`;
-             postitModalDescription.textContent = `${currentSampleForPostIt.descricao || 'Sem descrição'}`;
-             postitModalObservation.textContent = `"${currentSampleForPostIt.observation}"`;
-             postitMessageInput.value = existingNote ? existingNote.message : '';
-             sendPostitBtn.textContent = existingNote ? 'Atualizar Nota' : 'Adicionar Nota';
-             
-             postitModal.classList.remove('hidden');
-        }
-        
         async function sendPostIt() {
-             if (!currentSampleForPostIt || !currentSessionId) return;
+             if (!currentSampleForPostit || !currentSessionId) return;
              
              const message = postitMessageInput.value.trim();
-             if (!message || !currentPdName) {
+             if (!message) {
                  return showAlert("A nota não pode estar vazia.");
              }
              
              sendPostitBtn.disabled = true;
+             sendPostitBtn.textContent = 'A Adicionar...';
              
              try {
-                 const existingNote = allPdPostits.find(p => p.contextId === currentSampleForPostIt.id);
-                 
-                 const noteData = {
-                     pdManagerName: currentPdName,
-                     message: message,
-                     context: `Amostra: ${currentSampleForPostIt.produto} (Vendedor: ${currentSampleForPostIt.sellerName})`,
-                     contextId: currentSampleForPostIt.id,
-                     pedido: currentSampleForPostIt.pedido || '',
-                     dataFaturamento: currentSampleForPostIt.emissaoNF || '',
-                     timestamp: serverTimestamp(),
-                 };
-                 
-                 if (existingNote) {
-                     // Atualiza a nota existente
-                     const noteRef = doc(db, "sessoes", currentSessionId, "pdPostits", existingNote.id);
-                     await updateDoc(noteRef, noteData);
-                 } else {
-                     // Adiciona uma nova nota
-                     const postitsRef = collection(db, "sessoes", currentSessionId, "pdPostits");
-                     await addDoc(postitsRef, noteData);
-                 }
-                 
-                 postitModal.classList.add('hidden');
-                 
-             } catch (error) {
-                 handleFirestoreError(error, "salvar post-it");
+                const postItData = {
+                    message,
+                    pdManagerName: currentPdManagerName,
+                    segment: currentSegment, // NOVO: Etiqueta o segmento
+                    context: `${currentSampleForPostit.produto} (V: ${currentSampleForPostit.sellerName}, P: ${currentSampleForPostit.pedido})`,
+                    contextId: currentSampleForPostit.id, // ID da amostra
+                    timestamp: serverTimestamp()
+                };
+                await addDoc(collection(db, "sessoes", currentSessionId, "pdPostits"), postItData);
+                
+                postitModal.classList.add('hidden');
+                showAlert("Nota P&D adicionada com sucesso.", "Sucesso", "text-green-600");
+                
+             } catch(error) {
+                handleFirestoreError(error, "adicionar post-it de amostra");
              } finally {
                  sendPostitBtn.disabled = false;
-                 currentSampleForPostIt = null;
+                 sendPostitBtn.textContent = 'Adicionar Nota';
+                 currentSampleForPostit = null;
              }
         }
         
-        async function addPostItFromInput() {
-             const message = postItInput.value.trim();
-             if (!message || !currentPdName) return;
-             
-             addPostItBtn.disabled = true;
-             
-             try {
-                 const noteData = {
-                     pdManagerName: currentPdName,
-                     message: message,
-                     context: "Nota Geral (sem amostra vinculada)",
-                     contextId: null,
-                     pedido: null,
-                     dataFaturamento: null,
-                     timestamp: serverTimestamp(),
-                 };
-                 const postitsRef = collection(db, "sessoes", currentSessionId, "pdPostits");
-                 await addDoc(postitsRef, noteData);
-                 postItInput.value = ''; // Limpa o input
-                 
-             } catch (error) {
-                 handleFirestoreError(error, "adicionar post-it geral");
-             } finally {
-                 addPostItBtn.disabled = false;
-             }
-        }
-        
-        async function deletePostIt(e) {
-             const noteId = e.currentTarget.dataset.noteId;
-             if (!noteId || !currentSessionId) return;
-             
-             // Adicionar confirmação
-             if (!confirm("Tem certeza que quer excluir esta nota?")) return;
-             
-             e.currentTarget.disabled = true;
-             
-             try {
-                 const noteRef = doc(db, "sessoes", currentSessionId, "pdPostits", noteId);
-                 await deleteDoc(noteRef);
-             } catch (error) {
-                 handleFirestoreError(error, "excluir post-it");
-                 e.currentTarget.disabled = false;
-             }
-             // O listener cuidará da remoção da UI
-        }
-        
-        // --- Lógica de Destaque ---
-        
-        async function toggleDestaqueAmostra(e) {
-            e.stopPropagation();
-            const sampleId = e.currentTarget.dataset.sampleId;
-            if (!currentSessionId || !sampleId) return;
-
-            const destaquesRef = doc(db, "sessoes", currentSessionId, "configuracoes", "destaquesAmostras");
-            const button = e.currentTarget;
-            button.disabled = true;
-
-            try {
-                await runTransaction(db, async (transaction) => {
-                    const destaquesDoc = await transaction.get(destaquesRef);
-                    const currentList = destaquesDoc.exists() ? (destaquesDoc.data().lista || []) : [];
-                    
-                    if (currentList.includes(sampleId)) {
-                        const updatedList = currentList.filter(id => id !== sampleId);
-                        transaction.set(destaquesRef, { lista: updatedList });
-                    } else {
-                        const updatedList = [...currentList, sampleId];
-                        transaction.set(destaquesRef, { lista: updatedList });
-                    }
-                });
-            } catch (error) {
-                handleFirestoreError(error, "atualizar destaques");
-            } finally {
-                button.disabled = false; // O listener vai atualizar a UI
-            }
-        }
-        
-        // Sino de Notificação (mostra respostas de Gerentes E Vendedores)
-        function renderNotificationBell() {
-             // O P&D só quer saber de respostas NÃO LIDAS
-             const unreadManagerReplies = allManagerReplies.filter(r => !r.readByPd);
-             const unreadSellerReplies = allSellerReplies.filter(r => !r.readByManager); // P&D usa a mesma flag
-             
-             const unreadCount = unreadManagerReplies.length + unreadSellerReplies.length;
-             
-             let bellBtn = document.getElementById('notification-btn');
+        // Sino de Notificação (mostra respostas de Vendedores e Gerentes)
+        function renderNotificationBell(unreadCount) {
              let countBadge = document.getElementById('notification-count-badge');
              
-             if (!bellBtn) {
+             if (!notificationBtn) {
                 const header = document.querySelector('#dashboard header .flex.items-center.gap-4');
+                if (!header) return; 
                 const bellWrapper = document.createElement('div');
                 bellWrapper.className = "relative";
                 bellWrapper.innerHTML = `
@@ -1266,16 +1099,10 @@
                     </button>
                 `;
                 header.insertBefore(bellWrapper, logoutBtn);
-                bellBtn = document.getElementById('notification-btn');
+                notificationBtn = document.getElementById('notification-btn');
                 countBadge = document.getElementById('notification-count-badge');
                 
-                // Adiciona o listener SÓ QUANDO o botão é criado
-                bellBtn.addEventListener('click', () => {
-                     // Lê as listas frescas no momento do clique
-                     const freshUnreadManager = allManagerReplies.filter(r => !r.readByPd);
-                     const freshUnreadSeller = allSellerReplies.filter(r => !r.readByManager);
-                     openNotificationModal(freshUnreadManager, freshUnreadSeller);
-                });
+                notificationBtn.addEventListener('click', openNotificationModal);
              }
              
              if (unreadCount > 0) {
@@ -1286,80 +1113,64 @@
              }
         }
         
-        function openNotificationModal(managerReplies, sellerReplies) {
+        async function openNotificationModal() {
              notificationList.innerHTML = '';
              
-             if (managerReplies.length === 0 && sellerReplies.length === 0) {
+             const q = query(
+                collection(db, "sessoes", currentSessionId, "respostasVendedor"),
+                where("readByPd", "==", false),
+                orderBy("timestamp", "desc")
+             );
+             
+             const snapshot = await getDocs(q);
+             const replies = snapshot.docs;
+
+             if (replies.length === 0) {
                  notificationList.innerHTML = '<p class="text-gray-500">Nenhuma resposta nova.</p>';
                  notificationModal.classList.remove('hidden');
                  return;
              }
              
-             // Junta, ordena por data
-             const allReplies = [
-                 ...managerReplies.map(r => ({ ...r, type: 'manager', ref: doc(db, "sessoes", currentSessionId, "notificacoesVendedor", r.id) })),
-                 ...sellerReplies.map(r => ({ ...r, type: 'seller', ref: doc(db, "sessoes", currentSessionId, "respostasVendedor", r.id) }))
-             ].sort((a,b) => (b.timestamp?.toDate() ?? 0) - (a.timestamp?.toDate() ?? 0));
+             const batch = writeBatch(db);
              
-             allReplies.forEach(reply => {
+             replies.forEach(replyDoc => {
+                 const reply = replyDoc.data();
                  const item = document.createElement('div');
                  item.className = "p-3 border-b border-gray-100";
-                 
-                 if (reply.type === 'manager') {
-                     item.innerHTML = `
-                        <p><span class="font-semibold text-blue-600">${reply.managerName}</span> (Gerente) respondeu:</p>
-                        <p class="italic text-gray-700 my-1">"${reply.replyMessage}"</p>
-                        <p class="text-xs text-gray-500">Ref: ${reply.produto} (Vendedor: ${reply.sellerName})</p>
-                        <div class="text-right mt-2">
-                            <button class="mark-as-read-btn bg-gray-200 text-gray-700 text-xs font-semibold py-1 px-3 rounded hover:bg-gray-300" data-type="manager" data-id="${reply.id}">Marcar como Lida</button>
-                        </div>
-                     `;
-                 } else { // type === 'seller'
-                      item.innerHTML = `
-                        <p><span class="font-semibold text-green-600">${reply.sellerName}</span> (Vendedor) respondeu:</p>
-                        <p class="italic text-gray-700 my-1">"${reply.replyMessage}"</p>
-                        <p class="text-xs text-gray-500">Ref: ${reply.produto} (Pedido: ${reply.pedido})</p>
-                        <p class="text-xs text-gray-400">Mensagem original: "${reply.originalManagerMessage}"</p>
-                        <div class="text-right mt-2">
-                            <button class="mark-as-read-btn bg-gray-200 text-gray-700 text-xs font-semibold py-1 px-3 rounded hover:bg-gray-300" data-type="seller" data-id="${reply.id}">Marcar como Lida</button>
-                        </div>
-                     `;
-                 }
+                 item.innerHTML = `
+                    <p><span class="font-semibold text-green-600">${reply.sellerName}</span> (Vendedor) respondeu:</p>
+                    <p class="italic text-gray-700 my-1">"${reply.replyMessage}"</p>
+                    <p class="text-xs text-gray-500">Ref: ${reply.produto} (Pedido: ${reply.pedido})</p>
+                    <p class="text-xs text-gray-400">Mensagem original: "${reply.originalManagerMessage}"</p>
+                    <button class="mark-as-read-btn text-xs text-blue-500 hover:underline" data-id="${replyDoc.id}">Marcar como lida</button>
+                 `;
                  notificationList.appendChild(item);
+                 
+                 // Não marca como lida automaticamente, espera o clique
              });
              
              notificationModal.classList.remove('hidden');
         }
         
         async function markReplyAsRead(e) {
-             const button = e.target;
-             const replyId = button.dataset.id;
-             const type = button.dataset.type;
-             button.disabled = true;
+             const id = e.target.dataset.id;
+             if (!id) return;
+             
+             e.target.disabled = true;
+             e.target.textContent = 'A marcar...';
              
              try {
-                 let replyRef;
-                 let fieldToUpdate;
-                 
-                 if (type === 'manager') {
-                     replyRef = doc(db, "sessoes", currentSessionId, "notificacoesVendedor", replyId);
-                     fieldToUpdate = { readByPd: true };
-                 } else { // seller
-                     replyRef = doc(db, "sessoes", currentSessionId, "respostasVendedor", replyId);
-                     fieldToUpdate = { readByManager: true };
-                 }
-                 
-                 await updateDoc(replyRef, fieldToUpdate);
-                 // O listener vai atualizar o sino
-                 
-             } catch (error) {
+                 const docRef = doc(db, "sessoes", currentSessionId, "respostasVendedor", id);
+                 await updateDoc(docRef, { readByPd: true });
+                 e.target.closest('.p-3').remove(); // Remove da lista
+             } catch(error) {
                  handleFirestoreError(error, "marcar resposta como lida");
-                 button.disabled = false;
+                 e.target.disabled = false;
+                 e.target.textContent = 'Marcar como lida';
              }
         }
         
         // --- Modal de Amostras (Pesquisa Global) ---
-        
         function openGlobalSearchModal(samples) {
             feedbackSamplesTitle.textContent = `Resultados da Pesquisa: "${globalSearchInput.value}" (${samples.length})`;
             feedbackSamplesList.innerHTML = '';
@@ -1372,10 +1183,8 @@
             
             samples.forEach(sample => {
                  const itemDiv = document.createElement('div');
-                 const isHighlighted = highlightedSamplesCache.includes(sample.id);
-                 itemDiv.className = `feedback-sample-item text-sm ${isHighlighted ? 'highlight' : ''}`;
+                 itemDiv.className = `feedback-sample-item text-sm`;
                  
-                 // Construir a thread de comunicação (igual ao feed)
                  let repliesHtml = '';
                  const pdNote = allPdPostits.find(p => p.contextId === sample.id);
                  if (pdNote) repliesHtml += `<div class="pd-note"><p><strong>Nota P&D:</strong> ${pdNote.message}</p></div>`;
@@ -1385,10 +1194,6 @@
                      const sellerReply = allSellerReplies.find(r => r.originalManagerMessage === managerReply.replyMessage && r.pedido === sample.pedido);
                      if (sellerReply) repliesHtml += `<div class="seller-reply"><p><strong>${sellerReply.sellerName}:</strong> ${sellerReply.replyMessage}</p></div>`;
                  }
-                 
-                 const starIcon = isHighlighted ?
-                     `<svg class="w-5 h-5 text-amber-500" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588 1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>` :
-                     `<svg class="w-5 h-5 text-gray-400 hover:text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.524 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.524 4.674c.3.921-.755 1.688-1.54 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.784.57-1.838-.197-1.539-1.118l1.524-4.674a1 1 0 00-.363-1.118L2.98 10.1c-.783-.57-.38-1.81.588 1.81h4.914a1 1 0 00.951-.69l1.524-4.674z"></path></svg>`;
 
                  itemDiv.innerHTML = `
                      <div class="flex justify-between items-start">
@@ -1400,19 +1205,11 @@
                              </p>
                              <p class="font-medium text-gray-800 mt-1">Feedback: ${sample.feedback || 'Pendente'}</p>
                          </div>
-                         <button class="highlight-sample-btn p-1 rounded-full hover:bg-gray-100" data-sample-id="${sample.id}">
-                             ${starIcon}
-                         </button>
                      </div>
                      ${sample.observation ? `<p class="text-xs text-gray-600 mt-1 italic">Obs: ${sample.observation}</p>` : ''}
                      ${repliesHtml}
                  `;
                  feedbackSamplesList.appendChild(itemDiv);
-            });
-            
-            // Listeners
-            feedbackSamplesList.querySelectorAll('.highlight-sample-btn').forEach(btn => {
-                 btn.addEventListener('click', toggleDestaqueAmostra);
             });
             
             feedbackSamplesModal.classList.remove('hidden');
@@ -1430,10 +1227,8 @@
                 const searchTerm = normalizeText(globalSearchInput.value);
                 if (!searchTerm) {
                     renderObservationsFeed(allCurrentSamples);
-                    renderPdPostits();
                     return;
                 }
-                // Filtra as amostras (não apenas as com observação)
                 const filteredSamples = allCurrentSamples.filter(s => 
                     normalizeText(s.sellerName).includes(searchTerm) ||
                     normalizeText(s.produto).includes(searchTerm) ||
@@ -1447,14 +1242,15 @@
                 
             } else { // Pesquisa em tempo real nos feeds
                 renderObservationsFeed(allCurrentSamples);
-                renderPdPostits();
             }
         });
 
         // Modais
         closeFeedbackSamplesBtn.addEventListener('click', () => feedbackSamplesModal.classList.add('hidden'));
+        
         cancelPdReplyBtn.addEventListener('click', () => pdReplyModal.classList.add('hidden'));
-        sendPdReplyBtn.addEventListener('click', sendReplyToPd);
+        sendPdReplyBtn.addEventListener('click', sendPdReply);
+        
         cancelPostitBtn.addEventListener('click', () => postitModal.classList.add('hidden'));
         sendPostitBtn.addEventListener('click', sendPostIt);
         
@@ -1465,7 +1261,7 @@
              if (button) deletePostIt({ currentTarget: button });
         });
 
-        // Modal de Notificações (Respostas dos Gestores/Vendedores)
+        // Modal de Notificações (Respostas dos Gestores)
         closeNotificationBtn.addEventListener('click', () => notificationModal.classList.add('hidden'));
         notificationList.addEventListener('click', (e) => {
             const button = e.target.closest('.mark-as-read-btn');
@@ -1478,6 +1274,7 @@
             if (button) {
                 const cell = button.closest('tr').querySelector('.password-cell');
                 const password = cell.dataset.password;
+
                 if (button.dataset.state === 'hidden') {
                     cell.textContent = password;
                     button.textContent = 'Ocultar';
@@ -1490,27 +1287,26 @@
             }
         });
 
+
         // --- INICIALIZAÇÃO ---
         (async () => {
             try {
-                await signInAnonymously(auth);
-                populatePdButtons();
+                await signInAnonymously(auth); // Garante que estamos autenticados no Firebase
+                // ALTERADO: de populatePdButtons para populatePdLoginSelect
+                populatePdLoginSelect(); 
                 
                 // Tenta fazer login automático se já esteve logado
                 const savedSegment = localStorage.getItem('pdSegment');
                 if (savedSegment && PD_PASSWORDS[savedSegment]) {
+                    // Define o estado global
                     currentSegment = savedSegment;
-                    currentPdName = PD_PASSWORDS[savedSegment].name;
+                    currentPdManagerName = PD_PASSWORDS[savedSegment].name;
+                    currentPrefixes = PD_PASSWORDS[savedSegment].prefixes;
                     pdLoginBtn.disabled = true;
                     pdLoginBtn.textContent = 'A carregar...';
                     
-                    // Simula o clique no card correto para o feedback visual
-                    pdLoginButtons.querySelectorAll('.login-card').forEach(c => {
-                         if(c.dataset.segment === savedSegment) {
-                             c.classList.add('selected');
-                             c.querySelector('svg:last-child').classList.remove('opacity-0');
-                         }
-                    });
+                    // Seleciona o dropdown
+                    pdSegmentSelect.value = savedSegment;
                     
                     const sessionId = await getActiveSessionId();
                     if (!sessionId) {
@@ -1537,6 +1333,8 @@
     </script>
 </body>
 </html>
+
+
 
 
 
